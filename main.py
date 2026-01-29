@@ -52,7 +52,7 @@ from fastapi import Request, Form, HTTPException
 from fastapi.responses import HTMLResponse
 import httpx
 
-MODEL_API_URL = "http://127.0.0.1:8000/summarize"
+MODEL_API_URL = "http://13.48.58.127:8000/summarize"
 
 @app.post("/summarize", response_class=HTMLResponse)
 async def summarize(
@@ -127,3 +127,4 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000
     )
+
