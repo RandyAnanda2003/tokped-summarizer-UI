@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokopedia Review Summary - AI Powered</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts - Using distinctive typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --tokopedia-green: #00AA5B;
+            --tokopedia-light: #00D67D;
+            --tokopedia-dark: #008849;
+            --accent-orange: #FF6B35;
+            --gradient-1: linear-gradient(135deg, #00AA5B 0%, #00D67D 100%);
+            --gradient-2: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
+            --shadow-soft: 0 4px 24px rgba(0, 170, 91, 0.12);
+            --shadow-medium: 0 8px 40px rgba(0, 170, 91, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #FAFBFC;
+        }
+
+        h1, h2, h3, .heading {
+            font-family: 'Sora', sans-serif;
+        }
+
+        /* Animated gradient background */
+        .gradient-bg {
+            background: var(--gradient-1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Fade in animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .scale-in {
+            animation: scaleIn 0.5s ease-out forwards;
+        }
+
+        /* Stagger delays */
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+        /* Modal Loading */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
+        }
+
+        .shimmer {
+            background: linear-gradient(
+                to right,
+                #e5e7eb 8%,
+                #f3f4f6 18%,
+                #e5e7eb 33%
+            );
+            background-size: 800px 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        /* Custom card styles */
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-medium);
+            transform: translateY(-4px);
+        }
+
+        /* Step card with number badge */
+        .step-card {
+            position: relative;
+            padding: 2rem;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -16px;
+            left: 2rem;
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 170, 91, 0.3);
+        }
+
+        /* Input focus effects */
+        .input-enhanced {
+            transition: all 0.3s ease;
+            border: 2px solid #E5E7EB;
+        }
+
+        .input-enhanced:focus {
+            border-color: var(--tokopedia-green);
+            box-shadow: 0 0 0 4px rgba(0, 170, 91, 0.1);
+            outline: none;
+        }
+
+        /* Button gradient effect */
+        .btn-gradient {
+            background: var(--gradient-1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-gradient:hover::before {
+            left: 100%;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 170, 91, 0.4);
+        }
+
+        /* Icon container */
+        .icon-container {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #FFE5DB 0%, #FFD4C4 100%);
+            color: #C2410C;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+
+        /* Sample URL box */
+        .sample-url {
+            background: #F9FAFB;
+            border: 2px dashed #D1D5DB;
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #6B7280;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sample-url:hover {
+            background: #F3F4F6;
+            border-color: var(--tokopedia-green);
+            color: var(--tokopedia-dark);
+        }
+
+        /* Decorative elements */
+        .deco-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .deco-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--tokopedia-green);
+            top: -150px;
+            right: -100px;
+        }
+
+        .deco-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-orange);
+            bottom: -100px;
+            left: -50px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .step-card {
+                padding: 1.5rem;
+            }
+            
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= MODAL LOADING ================= -->
+<div id="loadingModal" class="modal">
+    <div class="card scale-in p-8 w-full max-w-md text-center mx-4">
+        <div class="w-20 h-20 mx-auto mb-6 spinner" style="background: var(--gradient-1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+        </div>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-2 heading">
+            Sedang Memproses...
+        </h3>
+
+        <p class="text-gray-600 mb-6">
+            AI kami sedang menganalisis ratusan ulasan produk
+        </p>
+
+        <div class="w-full h-2 rounded-full overflow-hidden shimmer"></div>
+
+        <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Estimasi waktu: 10–30 detik</span>
+        </div>
+    </div>
+</div>
+
+<!-- ================= HEADER ================= -->
+<header class="gradient-bg shadow-lg relative">
+    <div class="max-w-6xl mx-auto px-4 py-8 relative z-10">
+        <div class="flex items-center gap-4 fade-in">
+            <div class="bg-white rounded-2xl p-3 shadow-lg">
+                <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#00AA5B"/>
+                    <path d="M2 17L12 22L22 17" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold text-white heading">
+                    Tokopedia Review Summary
+                </h1>
+                <p class="text-green-50 text-sm md:text-base mt-1">
+                    Powered by AI - Rangkum ratusan ulasan dalam hitungan detik ⚡
+                </p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ================= MAIN ================= -->
+<main class="max-w-6xl mx-auto px-4 py-12">
+
+    <!-- HERO SECTION -->
+    <div class="text-center mb-12 fade-in-up delay-1">
+        <span class="badge">✨ 100% Gratis & Cepat</span>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mt-4 mb-4 heading">
+            Bingung Baca Ribuan Review?<br>
+            Biar AI yang Rangkumin! 🤖
+        </h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Masukkan URL produk Tokopedia, dan dapatkan ringkasan ulasan yang jelas dan objektif dari ratusan pembeli asli.
+        </p>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="mb-16 fade-in-up delay-2">
+        <h3 class="text-2xl font-bold text-center mb-8 heading text-gray-800">
+            📖 Cara Menggunakan
+        </h3>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Step 1 -->
+            <div class="card step-card fade-in-up delay-2">
+                <div class="step-number">1</div>
+                <div class="icon-container">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                    </svg>
+                </div>
+                <h4 class="font-bold text-lg mb-2 heading">Salin URL Produk</h4>
+                <p class="text-gray-600 text-sm">
+                    Buka produk di Tokopedia, lalu copy URL-nya dari address bar browser
+                </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="card step-card fade-in-up delay-3">
+                <div class="step-number">2</div>
+                <div class="icon-container">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                </div>
+                <h4 class="font-bold text-lg mb-2 heading">Paste & Klik Generate</h4>
+                <p class="text-gray-600 text-sm">
+                    Tempelkan URL di form bawah, lalu klik tombol "Generate Summary"
+                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="card step-card fade-in-up delay-4">
+                <div class="step-number">3</div>
+                <div class="icon-container">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h4 class="font-bold text-lg mb-2 heading">Dapatkan Ringkasan</h4>
+                <p class="text-gray-600 text-sm">
+                    Tunggu 10-30 detik, dan voila! Ringkasan ulasan siap dibaca
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORM SECTION -->
+    <div class="mb-12 fade-in-up delay-3">
+        <div class="card p-8 md:p-12 relative overflow-hidden">
+            <div class="deco-circle deco-1"></div>
+            <div class="deco-circle deco-2"></div>
+            
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style="background: var(--gradient-1);">
+                        🔗
+                    </div>
+                    <h3 class="text-2xl font-bold heading text-gray-800">
+                        Mulai Analisis Review
+                    </h3>
+                </div>
+
+                <form method="POST" action="/summarize" id="summaryForm">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        URL Produk Tokopedia
+                    </label>
+
+                    <input
+                        type="url"
+                        name="product_url"
+                        required
+                        value="{{ product_url if product_url else '' }}"
+                        placeholder="https://www.tokopedia.com/..."
+                        class="w-full px-5 py-4 rounded-xl input-enhanced text-gray-700 mb-4 text-base"
+                    >
+
+                    <!-- Sample URL -->
+                    <div class="mb-6">
+                        <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Contoh URL:</p>
+                        <div class="sample-url" onclick="copySampleUrl()">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="break-all">https://www.tokopedia.com/xiaomiindonesia/redmi-note-13-pro-8-256gb</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">💡 Klik untuk menyalin</p>
+                    </div>
+
+                    <button
+                        id="submitBtn"
+                        type="submit"
+                        class="w-full btn-gradient text-white font-bold py-5 rounded-xl text-lg shadow-lg"
+                    >
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Generate Summary Sekarang
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ERROR -->
+    {% if error %}
+    <div class="card p-6 mb-8 border-l-4 border-red-500 bg-red-50 fade-in">
+        <div class="flex items-start gap-3">
+            <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+                <strong class="text-red-700 font-bold">Terjadi Kesalahan</strong>
+                <p class="text-red-600 mt-1">{{ error }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- SUMMARY RESULT -->
+    {% if summary %}
+    <div class="card p-8 md:p-12 fade-in">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl" style="background: linear-gradient(135deg, #FFE5DB 0%, #FFD4C4 100%);">
+                ✨
+            </div>
+            <div>
+                <h3 class="text-2xl font-bold heading text-gray-800">Ringkasan Ulasan</h3>
+                <p class="text-sm text-gray-500">Dianalisis dari {{ jumlah_ulasan }} ulasan pembeli</p>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 md:p-8 border-2 border-green-100">
+            <p class="text-gray-800 leading-relaxed text-base md:text-lg">
+                {{ summary }}
+            </p>
+        </div>
+
+        <div class="mt-6 flex items-center gap-2 text-sm text-gray-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Summary berhasil dibuat dari <strong>{{ jumlah_ulasan }}</strong> ulasan terverifikasi</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- FEATURES -->
+    <div class="mt-16 fade-in-up delay-4">
+        <h3 class="text-2xl font-bold text-center mb-8 heading text-gray-800">
+            ⚡ Kenapa Pakai Tool Ini?
+        </h3>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="card p-6 text-center">
+                <div class="text-4xl mb-3">🚀</div>
+                <h4 class="font-bold mb-2 heading">Super Cepat</h4>
+                <p class="text-sm text-gray-600">Analisis selesai dalam 10-30 detik</p>
+            </div>
+
+            <div class="card p-6 text-center">
+                <div class="text-4xl mb-3">🤖</div>
+                <h4 class="font-bold mb-2 heading">AI Pintar</h4>
+                <p class="text-sm text-gray-600">Menggunakan teknologi AI terkini</p>
+            </div>
+
+            <div class="card p-6 text-center">
+                <div class="text-4xl mb-3">💯</div>
+                <h4 class="font-bold mb-2 heading">100% Gratis</h4>
+                <p class="text-sm text-gray-600">Tidak ada biaya tersembunyi</p>
+            </div>
+
+            <div class="card p-6 text-center">
+                <div class="text-4xl mb-3">🎯</div>
+                <h4 class="font-bold mb-2 heading">Objektif</h4>
+                <p class="text-sm text-gray-600">Rangkuman netral dan akurat</p>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="mt-20 py-8 border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-600 text-sm">
+            Made with ❤️ for smart shoppers • Powered by AI
+        </p>
+        <p class="text-gray-400 text-xs mt-2">
+            Disclaimer: Tool ini tidak berafiliasi resmi dengan Tokopedia
+        </p>
+    </div>
+</footer>
+
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+// Form submission
+document.getElementById("summaryForm").addEventListener("submit", function () {
+    document.getElementById("loadingModal").classList.add("active");
+    document.getElementById("submitBtn").disabled = true;
+});
+
+// Copy sample URL function
+function copySampleUrl() {
+    const sampleUrl = "https://www.tokopedia.com/xiaomiindonesia/redmi-note-13-pro-8-256gb";
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(sampleUrl).then(function() {
+        // Visual feedback
+        const urlBox = document.querySelector('.sample-url');
+        const originalBg = urlBox.style.background;
+        const originalBorder = urlBox.style.borderColor;
+        
+        urlBox.style.background = '#D1FAE5';
+        urlBox.style.borderColor = '#10B981';
+        
+        // Show tooltip
+        const tooltip = document.createElement('div');
+        tooltip.textContent = '✓ Berhasil disalin!';
+        tooltip.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #10B981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        `;
+        document.body.appendChild(tooltip);
+        
+        setTimeout(() => {
+            tooltip.style.opacity = '0';
+            tooltip.style.transition = 'opacity 0.3s';
+            setTimeout(() => tooltip.remove(), 300);
+        }, 1500);
+        
+        setTimeout(() => {
+            urlBox.style.background = originalBg;
+            urlBox.style.borderColor = originalBorder;
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+
+// Smooth scroll behavior
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Auto-fill from URL parameter (if any)
+const urlParams = new URLSearchParams(window.location.search);
+const urlParam = urlParams.get('url');
+if (urlParam) {
+    document.querySelector('input[name="product_url"]').value = urlParam;
+}
+</script>
+
+</body>
+</html>
