@@ -5,17 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from scrapper import scrape_tokopedia_reviews
 import uvicorn
-
-
-# # ===============================
-# # LIFESPAN (STARTUP & SHUTDOWN)
-# # ===============================
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     # STARTUP     
-#     load_model()
-#     yield
-#     # SHUTDOWN (optional cleanup)
+import httpx
 
 
 # ===============================
@@ -48,9 +38,7 @@ async def home(request: Request):
     )
 
 
-from fastapi import Request, Form, HTTPException
-from fastapi.responses import HTMLResponse
-import httpx
+
 
 MODEL_API_URL = "http://13.48.58.127:8000/summarize"
 
@@ -127,4 +115,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000
     )
+
 
