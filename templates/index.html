@@ -5,116 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tokopedia Review Summary - AI Powered</title>
 
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Fonts - Using distinctive typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --tokopedia-green: #00AA5B;
-            --tokopedia-light: #00D67D;
-            --tokopedia-dark: #008849;
-            --accent-orange: #FF6B35;
-            --gradient-1: linear-gradient(135deg, #00AA5B 0%, #00D67D 100%);
-            --gradient-2: linear-gradient(135deg, #FF6B35 0%, #FFB347 100%);
-            --shadow-soft: 0 4px 24px rgba(0, 170, 91, 0.12);
-            --shadow-medium: 0 8px 40px rgba(0, 170, 91, 0.2);
+            --green: #00AA5B;
+            --green-light: #00C96D;
+            --green-dark: #007A40;
+            --green-muted: #E8F7EF;
+            --orange: #FF5733;
+            --black: #0A0A0A;
+            --gray-1: #1A1A1A;
+            --gray-2: #2E2E2E;
+            --gray-3: #555555;
+            --gray-4: #9A9A9A;
+            --gray-5: #E8E8E8;
+            --gray-6: #F5F5F5;
+            --white: #FFFFFF;
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
         }
 
-        * {
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'DM Sans', sans-serif;
-            background: #FAFBFC;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3, .heading {
-            font-family: 'Sora', sans-serif;
-        }
-
-        /* Animated gradient background */
-        .gradient-bg {
-            background: var(--gradient-1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .gradient-bg::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Fade in animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-
-        .scale-in {
-            animation: scaleIn 0.5s ease-out forwards;
-        }
-
-        /* Stagger delays */
-        .delay-1 { animation-delay: 0.1s; opacity: 0; }
-        .delay-2 { animation-delay: 0.2s; opacity: 0; }
-        .delay-3 { animation-delay: 0.3s; opacity: 0; }
-        .delay-4 { animation-delay: 0.4s; opacity: 0; }
-        .delay-5 { animation-delay: 0.5s; opacity: 0; }
-
-        /* Modal Loading */
+        /* â”€â”€ LOADING MODAL â”€â”€ */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
+            background: rgba(10, 10, 10, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 9999;
         }
 
@@ -122,533 +61,960 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.25s ease;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .modal-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            width: calc(100% - 2rem);
+            max-width: 420px;
+            text-align: center;
         }
 
-        .spinner {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -400px 0; }
-            100% { background-position: 400px 0; }
-        }
-
-        .shimmer {
-            background: linear-gradient(
-                to right,
-                #e5e7eb 8%,
-                #f3f4f6 18%,
-                #e5e7eb 33%
-            );
-            background-size: 800px 100%;
-            animation: shimmer 1.5s infinite linear;
-        }
-
-        /* Custom card styles */
-        .card {
-            background: white;
-            border-radius: 24px;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-medium);
-            transform: translateY(-4px);
-        }
-
-        /* Step card with number badge */
-        .step-card {
-            position: relative;
-            padding: 2rem;
-        }
-
-        .step-number {
-            position: absolute;
-            top: -16px;
-            left: 2rem;
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-1);
+        .modal-icon {
+            width: 72px;
+            height: 72px;
+            background: var(--black);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
+            margin: 0 auto 1.5rem;
+            animation: spin 2s linear infinite;
+        }
+
+        .modal-title {
             font-size: 1.25rem;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0, 170, 91, 0.3);
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 0.5rem;
         }
 
-        /* Input focus effects */
-        .input-enhanced {
-            transition: all 0.3s ease;
-            border: 2px solid #E5E7EB;
+        .modal-desc {
+            font-size: 0.9rem;
+            color: var(--gray-3);
+            margin-bottom: 1.5rem;
         }
 
-        .input-enhanced:focus {
-            border-color: var(--tokopedia-green);
-            box-shadow: 0 0 0 4px rgba(0, 170, 91, 0.1);
+        .progress-bar {
+            height: 3px;
+            background: var(--gray-5);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 999px;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        .modal-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--gray-4);
+        }
+
+        /* â”€â”€ HEADER â”€â”€ */
+        header {
+            background: var(--black);
+            padding: 1.25rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--gray-2);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--green);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--white);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            color: var(--gray-4);
+            display: block;
+            font-weight: 400;
+        }
+
+        .header-badge {
+            background: var(--green);
+            color: var(--white);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* â”€â”€ MAIN â”€â”€ */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* â”€â”€ HERO â”€â”€ */
+        .hero {
+            padding: 4rem 0 3rem;
+            border-bottom: 1px solid var(--gray-5);
+            animation: fadeInUp 0.7s ease both;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--green-muted);
+            color: var(--green-dark);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.25rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            color: var(--black);
+            margin-bottom: 1rem;
+            max-width: 680px;
+        }
+
+        .hero-title em {
+            font-style: normal;
+            color: var(--green);
+        }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: var(--gray-3);
+            max-width: 560px;
+            line-height: 1.7;
+        }
+
+        /* â”€â”€ STEPS â”€â”€ */
+        .steps-section {
+            padding: 3.5rem 0;
+            border-bottom: 1px solid var(--gray-5);
+            animation: fadeInUp 0.7s 0.1s ease both;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-4);
+            margin-bottom: 2rem;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .step-card {
+            background: var(--gray-6);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            position: relative;
+            transition: background 0.2s ease;
+        }
+
+        .step-card:hover {
+            background: var(--green-muted);
+        }
+
+        .step-num {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--white);
+            background: var(--black);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            line-height: 1;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.03em;
+        }
+
+        .step-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        .step-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 0.4rem;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--gray-3);
+            line-height: 1.6;
+        }
+
+        /* â”€â”€ FORM SECTION â”€â”€ */
+        .form-section {
+            padding: 3.5rem 0;
+            border-bottom: 1px solid var(--gray-5);
+            animation: fadeInUp 0.7s 0.2s ease both;
+        }
+
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .form-left h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: clamp(1.5rem, 3vw, 2.25rem);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: var(--black);
+            line-height: 1.15;
+            margin-bottom: 1rem;
+        }
+
+        .form-left p {
+            font-size: 0.9rem;
+            color: var(--gray-3);
+            line-height: 1.7;
+        }
+
+        .form-right {
+            background: var(--black);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--gray-4);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--gray-2);
+            border: 1px solid var(--gray-2);
+            border-radius: var(--radius-md);
+            padding: 0.9rem 1.1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--white);
+            transition: border-color 0.2s ease, background 0.2s ease;
             outline: none;
         }
 
-        /* Button gradient effect */
-        .btn-gradient {
-            background: var(--gradient-1);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
+        .form-input::placeholder {
+            color: var(--gray-3);
         }
 
-        .btn-gradient::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        .form-input:focus {
+            border-color: var(--green);
+            background: #1A1A1A;
+        }
+
+        .sample-box {
+            background: var(--gray-2);
+            border: 1px dashed var(--gray-3);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+
+        .sample-box:hover {
+            border-color: var(--green);
+            background: #1E2E26;
+        }
+
+        .sample-box-url {
+            font-size: 0.75rem;
+            color: var(--gray-4);
+            word-break: break-all;
+            line-height: 1.5;
+            font-family: 'Courier New', monospace;
+        }
+
+        .sample-hint {
+            font-size: 0.72rem;
+            color: var(--gray-4);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .submit-btn {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s ease;
+            background: var(--green);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 1rem 1.5rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.2s ease, transform 0.15s ease;
+            margin-top: 1.5rem;
         }
 
-        .btn-gradient:hover::before {
-            left: 100%;
+        .submit-btn:hover {
+            background: var(--green-light);
+            transform: translateY(-1px);
         }
 
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 170, 91, 0.4);
+        .submit-btn:active {
+            transform: translateY(0);
         }
 
-        /* Icon container */
-        .icon-container {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-            border-radius: 16px;
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* â”€â”€ ERROR â”€â”€ */
+        .error-box {
+            margin-top: 3.5rem;
+            background: #FEF2F2;
+            border: 1px solid #FCA5A5;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .error-box svg {
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .error-title {
+            font-weight: 700;
+            color: #991B1B;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .error-msg {
+            font-size: 0.85rem;
+            color: #DC2626;
+        }
+
+        /* â”€â”€ RESULT â”€â”€ */
+        .result-section {
+            padding: 3.5rem 0;
+            border-bottom: 1px solid var(--gray-5);
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--green-muted);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .result-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--black);
+        }
+
+        .result-meta {
+            font-size: 0.82rem;
+            color: var(--gray-4);
+        }
+
+        .result-body {
+            background: var(--black);
+            border-radius: var(--radius-xl);
+            padding: 2rem 2.25rem;
+        }
+
+        .result-text {
+            font-size: 1rem;
+            color: var(--gray-5);
+            line-height: 1.8;
+        }
+
+	.result-text ul {
+    	   padding-left: 20px;
+           margin-top: 10px;
+	}
+
+	.result-text li {
+           margin-bottom: 8px;
+	}		
+
+        .result-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.82rem;
+            color: var(--gray-4);
+        }
+
+        /* â”€â”€ FEATURES â”€â”€ */
+        .features-section {
+            padding: 3.5rem 0 4rem;
+            animation: fadeInUp 0.7s 0.3s ease both;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            border: 1px solid var(--gray-5);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--green);
+            background: var(--green-muted);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--black);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1rem;
         }
 
-        /* Badge */
-        .badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: linear-gradient(135deg, #FFE5DB 0%, #FFD4C4 100%);
-            color: #C2410C;
-            border-radius: 999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            letter-spacing: 0.025em;
+        .feature-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--black);
+            margin-bottom: 0.35rem;
         }
 
-        /* Sample URL box */
-        .sample-url {
-            background: #F9FAFB;
-            border: 2px dashed #D1D5DB;
-            border-radius: 12px;
-            padding: 1rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.875rem;
-            color: #6B7280;
-            transition: all 0.3s ease;
-            cursor: pointer;
+        .feature-desc {
+            font-size: 0.82rem;
+            color: var(--gray-3);
+            line-height: 1.55;
         }
 
-        .sample-url:hover {
-            background: #F3F4F6;
-            border-color: var(--tokopedia-green);
-            color: var(--tokopedia-dark);
+        /* â”€â”€ FOOTER â”€â”€ */
+        footer {
+            background: var(--black);
+            padding: 2rem 1.5rem;
         }
 
-        /* Decorative elements */
-        .deco-circle {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
-            pointer-events: none;
+        .footer-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .deco-1 {
-            width: 300px;
-            height: 300px;
-            background: var(--tokopedia-green);
-            top: -150px;
-            right: -100px;
+        .footer-left {
+            font-size: 0.82rem;
+            color: var(--gray-4);
         }
 
-        .deco-2 {
-            width: 200px;
-            height: 200px;
-            background: var(--accent-orange);
-            bottom: -100px;
-            left: -50px;
+        .footer-right {
+            font-size: 0.75rem;
+            color: var(--gray-3);
         }
 
-        /* Responsive */
+        /* â”€â”€ ANIMATIONS â”€â”€ */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 95%; }
+        }
+
+        /* â”€â”€ MOBILE RESPONSIVE â”€â”€ */
         @media (max-width: 768px) {
-            .step-card {
-                padding: 1.5rem;
+            header { padding: 1rem 1.25rem; }
+
+            .logo-text { font-size: 0.9rem; }
+
+            main { padding: 0 1.25rem; }
+
+            .hero { padding: 2.5rem 0 2rem; }
+
+            .hero-title { font-size: 2rem; }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
             }
-            
-            .step-number {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
+
+            .step-card { padding: 1.5rem; }
+
+            .form-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
             }
+
+            .form-right { padding: 1.5rem; }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .result-body { padding: 1.5rem; }
+
+            .footer-inner { flex-direction: column; text-align: center; }
+        }
+
+        @media (max-width: 420px) {
+            .hero-title { font-size: 1.65rem; }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-badge { display: none; }
         }
     </style>
 </head>
 
 <body>
 
-<!-- ================= MODAL LOADING ================= -->
+<!-- â”€â”€ MODAL LOADING â”€â”€ -->
 <div id="loadingModal" class="modal">
-    <div class="card scale-in p-8 w-full max-w-md text-center mx-4">
-        <div class="w-20 h-20 mx-auto mb-6 spinner" style="background: var(--gradient-1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"/>
+    <div class="modal-card">
+        <div class="modal-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
         </div>
-
-        <h3 class="text-xl font-bold text-gray-800 mb-2 heading">
-            Sedang Memproses...
-        </h3>
-
-        <p class="text-gray-600 mb-6">
-            AI kami sedang menganalisis ratusan ulasan produk
-        </p>
-
-        <div class="w-full h-2 rounded-full overflow-hidden shimmer"></div>
-
-        <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="modal-title">Sedang Memproses...</div>
+        <div class="modal-desc">
+            AI kami sedang menganalisis {{jumlah_ulasan}} ulasan produk terbaru
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="modal-note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Estimasi waktu: 10–30 detik</span>
+            Estimasi waktu: sekitar 1â€“3 menit (menggunakan CPU)
         </div>
     </div>
 </div>
 
-<!-- ================= HEADER ================= -->
-<header class="gradient-bg shadow-lg relative">
-    <div class="max-w-6xl mx-auto px-4 py-8 relative z-10">
-        <div class="flex items-center gap-4 fade-in">
-            <div class="bg-white rounded-2xl p-3 shadow-lg">
-                <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#00AA5B"/>
-                    <path d="M2 17L12 22L22 17" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 12L12 17L22 12" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- â”€â”€ HEADER â”€â”€ -->
+<header>
+    <div class="header-inner">
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
             </div>
-
             <div>
-                <h1 class="text-3xl md:text-4xl font-bold text-white heading">
-                    Tokopedia Review Summary
-                </h1>
-                <p class="text-green-50 text-sm md:text-base mt-1">
-                    Powered by AI - Rangkum ratusan ulasan dalam hitungan detik ⚡
-                </p>
+                <span class="logo-text">Review Summary</span>
+                <span class="logo-sub">Powered by T5 AI</span>
             </div>
         </div>
+        <div class="header-badge">100% Gratis</div>
     </div>
 </header>
 
-<!-- ================= MAIN ================= -->
-<main class="max-w-6xl mx-auto px-4 py-12">
+<!-- â”€â”€ MAIN â”€â”€ -->
+<main>
 
-    <!-- HERO SECTION -->
-    <div class="text-center mb-12 fade-in-up delay-1">
-        <span class="badge">✨ 100% Gratis & Cepat</span>
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mt-4 mb-4 heading">
-            Bingung Baca Ribuan Review?<br>
-            Biar AI yang Rangkumin! 🤖
-        </h2>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Masukkan URL produk Tokopedia, dan dapatkan ringkasan ulasan yang jelas dan objektif dari ratusan pembeli asli.
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            T5 AI Â· Analisis Ulasan Tokopedia
+        </div>
+        <h1 class="hero-title">
+            Malas baca review, tapi takut<br>
+            barang <em>bodong?</em>
+        </h1>
+        <p class="hero-desc">
+            Masukkan URL produk Tokopedia dan dapatkan ringkasan ulasan yang jelas dan objektif dari ulasan-ulasan terbaru pembeli asli.
         </p>
-    </div>
+    </section>
 
-    <!-- HOW IT WORKS -->
-    <div class="mb-16 fade-in-up delay-2">
-        <h3 class="text-2xl font-bold text-center mb-8 heading text-gray-800">
-            📖 Cara Menggunakan
-        </h3>
-        
-        <div class="grid md:grid-cols-3 gap-6">
-            <!-- Step 1 -->
-            <div class="card step-card fade-in-up delay-2">
-                <div class="step-number">1</div>
-                <div class="icon-container">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+    <!-- STEPS -->
+    <section class="steps-section">
+        <div class="section-label">Cara Menggunakan</div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
                     </svg>
                 </div>
-                <h4 class="font-bold text-lg mb-2 heading">Salin URL Produk</h4>
-                <p class="text-gray-600 text-sm">
-                    Buka produk di Tokopedia, lalu copy URL-nya dari address bar browser
-                </p>
+                <div class="step-title">Salin URL Produk</div>
+                <div class="step-desc">Buka produk di Tokopedia, lalu copy URL-nya dari address bar browser</div>
             </div>
-
-            <!-- Step 2 -->
-            <div class="card step-card fade-in-up delay-3">
-                <div class="step-number">2</div>
-                <div class="icon-container">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
                 </div>
-                <h4 class="font-bold text-lg mb-2 heading">Paste & Klik Generate</h4>
-                <p class="text-gray-600 text-sm">
-                    Tempelkan URL di form bawah, lalu klik tombol "Generate Summary"
-                </p>
+                <div class="step-title">Paste &amp; Klik Generate</div>
+                <div class="step-desc">Tempelkan URL di form, lalu klik tombol "Generate Summary"</div>
             </div>
-
-            <!-- Step 3 -->
-            <div class="card step-card fade-in-up delay-4">
-                <div class="step-number">3</div>
-                <div class="icon-container">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
                 </div>
-                <h4 class="font-bold text-lg mb-2 heading">Dapatkan Ringkasan</h4>
-                <p class="text-gray-600 text-sm">
-                    Tunggu 10-30 detik, dan voila! Ringkasan ulasan siap dibaca
-                </p>
+                <div class="step-title">Dapatkan Ringkasan</div>
+                <div class="step-desc">Tunggu 1â€“3 menit dan ringkasan ulasan terbaru siap dibaca</div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- FORM SECTION -->
-    <div class="mb-12 fade-in-up delay-3">
-        <div class="card p-8 md:p-12 relative overflow-hidden">
-            <div class="deco-circle deco-1"></div>
-            <div class="deco-circle deco-2"></div>
-            
-            <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style="background: var(--gradient-1);">
-                        🔗
-                    </div>
-                    <h3 class="text-2xl font-bold heading text-gray-800">
-                        Mulai Analisis Review
-                    </h3>
-                </div>
-
+    <!-- FORM -->
+    <section class="form-section">
+        <div class="form-layout">
+            <div class="form-left">
+                <h2>Mulai analisis<br>review sekarang</h2>
+                <p>Masukkan URL produk Tokopedia untuk mendapatkan ringkasan objektif berdasarkan 50â€“60 ulasan pembeli terverifikasi terbaru.</p>
+            </div>
+            <div class="form-right">
                 <form method="POST" action="/summarize" id="summaryForm">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">
-                        URL Produk Tokopedia
-                    </label>
-
-                    <input
-                        type="url"
-                        name="product_url"
-                        required
-                        value="{{ product_url if product_url else '' }}"
-                        placeholder="https://www.tokopedia.com/..."
-                        class="w-full px-5 py-4 rounded-xl input-enhanced text-gray-700 mb-4 text-base"
-                    >
-
-                    <!-- Sample URL -->
-                    <div class="mb-6">
-                        <p class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Contoh URL:</p>
-                        <div class="sample-url" onclick="copySampleUrl()">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                </svg>
-                                <span class="break-all">https://www.tokopedia.com/xiaomiindonesia/redmi-note-13-pro-8-256gb</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-2">💡 Klik untuk menyalin</p>
+                    <div class="form-group">
+                        <label class="form-label">URL Produk Tokopedia</label>
+                        <input
+                            type="url"
+                            name="product_url"
+                            required
+                            value="{{ product_url if product_url else '' }}"
+                            placeholder="https://www.tokopedia.com/..."
+                            class="form-input"
+                        >
                     </div>
 
-                    <button
-                        id="submitBtn"
-                        type="submit"
-                        class="w-full btn-gradient text-white font-bold py-5 rounded-xl text-lg shadow-lg"
-                    >
-                        <span class="flex items-center justify-center gap-2">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    <div class="form-group">
+                        <label class="form-label">Contoh URL</label>
+                        <div class="sample-box" onclick="copySampleUrl()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A9A9A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
                             </svg>
-                            Generate Summary Sekarang
-                        </span>
+                            <span class="sample-box-url">https://www.tokopedia.com/safiya-food-official/safiya-kurma-sukari-1-kg-raja-lembut-manis-halal-best-seller-1734310378614522990</span>
+                        </div>
+                        <div class="sample-hint">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            Klik untuk menyalin
+                        </div>
+                    </div>
+
+                    <button id="submitBtn" type="submit" class="submit-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Generate Summary Sekarang
                     </button>
                 </form>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- ERROR -->
     {% if error %}
-    <div class="card p-6 mb-8 border-l-4 border-red-500 bg-red-50 fade-in">
-        <div class="flex items-start gap-3">
-            <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <div>
-                <strong class="text-red-700 font-bold">Terjadi Kesalahan</strong>
-                <p class="text-red-600 mt-1">{{ error }}</p>
-            </div>
+    <div class="error-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <div>
+            <div class="error-title">Terjadi Kesalahan</div>
+            <div class="error-msg">{{ error }}</div>
         </div>
     </div>
     {% endif %}
 
-    <!-- SUMMARY RESULT -->
+    <!-- RESULT -->
     {% if summary %}
-    <div class="card p-8 md:p-12 fade-in">
-        <div class="flex items-center gap-3 mb-6">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl" style="background: linear-gradient(135deg, #FFE5DB 0%, #FFD4C4 100%);">
-                ✨
+    <section class="result-section">
+        <div class="result-header">
+            <div class="result-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
             </div>
             <div>
-                <h3 class="text-2xl font-bold heading text-gray-800">Ringkasan Ulasan</h3>
-                <p class="text-sm text-gray-500">Dianalisis dari {{ jumlah_ulasan }} ulasan pembeli</p>
+                <div class="result-title">Ringkasan Ulasan</div>
+                <div class="result-meta">Dianalisis dari {{ jumlah_ulasan }} ulasan pembeli</div>
             </div>
         </div>
-
-        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 md:p-8 border-2 border-green-100">
-            <p class="text-gray-800 leading-relaxed text-base md:text-lg">
-                {{ summary }}
-            </p>
+        <div class="result-body result-text ">
+             {{ summary | safe }}
         </div>
-
-        <div class="mt-6 flex items-center gap-2 text-sm text-gray-500">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <div class="result-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
             </svg>
-            <span>Summary berhasil dibuat dari <strong>{{ jumlah_ulasan }}</strong> ulasan terverifikasi</span>
+            Summary berhasil dibuat dari <strong>{{ jumlah_ulasan }}</strong> ulasan terverifikasi
         </div>
-    </div>
+    </section>
     {% endif %}
 
     <!-- FEATURES -->
-    <div class="mt-16 fade-in-up delay-4">
-        <h3 class="text-2xl font-bold text-center mb-8 heading text-gray-800">
-            ⚡ Kenapa Pakai Tool Ini?
-        </h3>
-        
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="card p-6 text-center">
-                <div class="text-4xl mb-3">🚀</div>
-                <h4 class="font-bold mb-2 heading">Super Cepat</h4>
-                <p class="text-sm text-gray-600">Analisis selesai dalam 10-30 detik</p>
+    <section class="features-section">
+        <div class="section-label">Kenapa Pakai Tool Ini?</div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Super Cepat</div>
+                <div class="feature-desc">Analisis selesai dalam sekitar 1â€“3 menit</div>
             </div>
-
-            <div class="card p-6 text-center">
-                <div class="text-4xl mb-3">🤖</div>
-                <h4 class="font-bold mb-2 heading">AI Pintar</h4>
-                <p class="text-sm text-gray-600">Menggunakan teknologi AI terkini</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
+                    </svg>
+                </div>
+                <div class="feature-title">AI Pintar</div>
+                <div class="feature-desc">Menggunakan teknologi T5 (Text-to-Text Transfer Transformer)</div>
             </div>
-
-            <div class="card p-6 text-center">
-                <div class="text-4xl mb-3">💯</div>
-                <h4 class="font-bold mb-2 heading">100% Gratis</h4>
-                <p class="text-sm text-gray-600">Tidak ada biaya tersembunyi</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                    </svg>
+                </div>
+                <div class="feature-title">100% Gratis</div>
+                <div class="feature-desc">Tidak ada biaya tersembunyi, selamanya gratis</div>
             </div>
-
-            <div class="card p-6 text-center">
-                <div class="text-4xl mb-3">🎯</div>
-                <h4 class="font-bold mb-2 heading">Objektif</h4>
-                <p class="text-sm text-gray-600">Rangkuman netral dan akurat</p>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div class="feature-title">Objektif</div>
+                <div class="feature-desc">Rangkuman dari 50â€“60 review pembeli terbaru yang terverifikasi</div>
             </div>
         </div>
-    </div>
+    </section>
 
 </main>
 
-<!-- FOOTER -->
-<footer class="mt-20 py-8 border-t border-gray-200">
-    <div class="max-w-6xl mx-auto px-4 text-center">
-        <p class="text-gray-600 text-sm">
-            Made with ❤️ for smart shoppers • Powered by AI
-        </p>
-        <p class="text-gray-400 text-xs mt-2">
-            Disclaimer: Tool ini tidak berafiliasi resmi dengan Tokopedia
-        </p>
+<!-- â”€â”€ FOOTER â”€â”€ -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-left">Dibuat untuk para pembeli cerdas &mdash; Powered by AI</div>
+        <div class="footer-right">Disclaimer: Tool ini tidak berafiliasi resmi dengan Tokopedia</div>
     </div>
 </footer>
 
-<!-- ================= JAVASCRIPT ================= -->
+<!-- â”€â”€ JS â”€â”€ -->
 <script>
-// Form submission
 document.getElementById("summaryForm").addEventListener("submit", function () {
     document.getElementById("loadingModal").classList.add("active");
     document.getElementById("submitBtn").disabled = true;
 });
 
-// Copy sample URL function
 function copySampleUrl() {
-    const sampleUrl = "https://www.tokopedia.com/xiaomiindonesia/redmi-note-13-pro-8-256gb";
-    
-    // Copy to clipboard
+    const sampleUrl = document.querySelector('.sample-box-url').textContent.trim();
+    const input = document.querySelector('input[name="product_url"]');
+
     navigator.clipboard.writeText(sampleUrl).then(function() {
-        // Visual feedback
-        const urlBox = document.querySelector('.sample-url');
-        const originalBg = urlBox.style.background;
-        const originalBorder = urlBox.style.borderColor;
-        
-        urlBox.style.background = '#D1FAE5';
-        urlBox.style.borderColor = '#10B981';
-        
-        // Show tooltip
-        const tooltip = document.createElement('div');
-        tooltip.textContent = '✓ Berhasil disalin!';
-        tooltip.style.cssText = `
+        // Also paste into the input field for convenience
+        input.value = sampleUrl;
+
+        const box = document.querySelector('.sample-box');
+        box.style.borderColor = '#00AA5B';
+        box.style.background = '#1E2E26';
+
+        const toast = document.createElement('div');
+        toast.textContent = 'URL berhasil disalin & ditempel!';
+        toast.style.cssText = `
             position: fixed;
-            top: 50%;
+            bottom: 1.5rem;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: #10B981;
+            transform: translateX(-50%);
+            background: #00AA5B;
             color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 0.6rem 1.25rem;
+            border-radius: 999px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
             font-weight: 600;
             z-index: 10000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            white-space: nowrap;
         `;
-        document.body.appendChild(tooltip);
-        
+        document.body.appendChild(toast);
+
         setTimeout(() => {
-            tooltip.style.opacity = '0';
-            tooltip.style.transition = 'opacity 0.3s';
-            setTimeout(() => tooltip.remove(), 300);
-        }, 1500);
-        
-        setTimeout(() => {
-            urlBox.style.background = originalBg;
-            urlBox.style.borderColor = originalBorder;
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+            box.style.borderColor = '';
+            box.style.background = '';
         }, 2000);
-    }).catch(function(err) {
-        console.error('Could not copy text: ', err);
+    }).catch(function() {
+        // Fallback for browsers that block clipboard API
+        input.value = sampleUrl;
+        input.select();
+        document.execCommand('copy');
+
+        const toast = document.createElement('div');
+        toast.textContent = 'URL berhasil disalin!';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00AA5B;
+            color: white;
+            padding: 0.6rem 1.25rem;
+            border-radius: 999px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
     });
 }
 
-// Smooth scroll behavior
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Auto-fill from URL parameter (if any)
 const urlParams = new URLSearchParams(window.location.search);
 const urlParam = urlParams.get('url');
 if (urlParam) {
