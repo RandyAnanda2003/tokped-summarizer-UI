@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from contextlib import asynccontextmanager
 from scrapper import scrape_tokopedia_reviews
 import uvicorn
+import re
 import httpx
 
 
@@ -21,13 +21,14 @@ app.mount(
 
 templates = Jinja2Templates(directory="templates")
 
+MODEL_API_URL = "http://13.48.58.127:8000/summarize"
+
 
 # ===============================
 # ROUTES
 # ===============================
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    """Homepage - menampilkan form input URL Tokopedia"""
     return templates.TemplateResponse(
         "index.html",
         {
@@ -38,18 +39,11 @@ async def home(request: Request):
     )
 
 
-
-
-MODEL_API_URL = "http://13.48.58.127:8000/summarize"
-
 @app.post("/summarize", response_class=HTMLResponse)
 async def summarize(
     request: Request,
     product_url: str = Form(...)
 ):
-    """
-    Endpoint scraping + hit model server
-    """
     try:
         # ===============================
         # 1. SCRAPING
@@ -62,7 +56,7 @@ async def summarize(
                 detail="Gagal melakukan scraping ulasan"
             )
 
-        print(f"📝 Total ulasan: {scrapped_data['total_reviews']}")
+        print(f"Total ulasan: {scrapped_data['total_reviews']}")
 
         # ===============================
         # 2. HIT MODEL SERVER
@@ -78,16 +72,48 @@ async def summarize(
         if response.status_code != 200:
             raise Exception(f"Model error: {response.text}")
 
-        summary = response.json()["summary"]
+        raw_summary = response.json()["summary"].strip()
 
         # ===============================
-        # 3. RENDER HTML
+        # 3. PARSING BULLET → UL LI
+        # ===============================
+
+        # Pisahkan bagian sebelum bullet pertama
+        parts = re.split(r"\s*•\s*", raw_summary)
+
+        intro_text = parts[0].strip()
+        bullet_parts = parts[1:] if len(parts) > 1 else []
+
+        html_summary = ""
+
+        # Tambahkan paragraf awal
+        if intro_text:
+            intro_text = intro_text[0].upper() + intro_text[1:]
+            html_summary += f"<p>{intro_text}</p>"
+
+        # Kalau ada bullet
+        if bullet_parts:
+            html_summary += "<ul>"
+
+            for item in bullet_parts:
+                match = re.match(r"([^:]+):(.*)", item, re.DOTALL)
+                if match:
+                    title = match.group(1).strip().capitalize()
+                    content = match.group(2).strip()
+                    html_summary += f"<li><b>{title}:</b> {content}</li>"
+                else:
+                    html_summary += f"<li>{item.strip()}</li>"
+
+            html_summary += "</ul>"
+
+        # ===============================
+        # 4. RENDER HTML
         # ===============================
         return templates.TemplateResponse(
             "index.html",
             {
                 "request": request,
-                "summary": summary,
+                "summary": html_summary,
                 "jumlah_ulasan": scrapped_data["total_reviews"],
                 "error": None,
                 "product_url": product_url
@@ -113,7 +139,5 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000
+        port=8001
     )
-
-
