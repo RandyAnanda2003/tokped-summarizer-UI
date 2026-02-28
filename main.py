@@ -49,15 +49,24 @@ async def summarize(
         # 1. SCRAPING
         # ===============================
         scrapped_data = await scrape_tokopedia_reviews(product_url)
-
         if not scrapped_data:
             raise HTTPException(
                 status_code=404,
                 detail="Gagal melakukan scraping ulasan"
             )
-
+        
+        joined_text = scrapped_data["joined_text"].strip()
+        
+        # Validasi teks kosong / hanya titik
+        cleaned_text = joined_text.replace(".", "").strip()
+        if not cleaned_text:
+            raise HTTPException(
+                status_code=404,
+                detail="Ulasan kosong"
+            )
+        
         print(f"Total ulasan: {scrapped_data['total_reviews']}")
-
+        
         # ===============================
         # 2. HIT MODEL SERVER
         # ===============================
@@ -65,14 +74,15 @@ async def summarize(
             response = await client.post(
                 MODEL_API_URL,
                 json={
-                    "text": scrapped_data["joined_text"]
+                    "text": joined_text
                 }
             )
-
+        
         if response.status_code != 200:
             raise Exception(f"Model error: {response.text}")
-
+        
         raw_summary = response.json()["summary"].strip()
+        
 
         # ===============================
         # 3. PARSING BULLET → UL LI
@@ -141,3 +151,4 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8001
     )
+
