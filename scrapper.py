@@ -225,7 +225,10 @@ async def scrape_tokopedia_reviews(url: str):
     # ===============================
     # 5. JOIN DENGAN TITIK
     # ===============================
-    joined_text = ". ".join(cleaned_reviews) + "."
+    if cleaned_reviews : 
+        joined_text = ". ".join(cleaned_reviews) + "."
+    else :
+        joined_text = ""
 
     print(f"✅ Total review bersih: {len(cleaned_reviews)}")
 
@@ -233,4 +236,5 @@ async def scrape_tokopedia_reviews(url: str):
         "total_reviews": len(cleaned_reviews),
         "joined_text": joined_text
     }
+
 
