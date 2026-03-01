@@ -125,90 +125,91 @@ async def scrape_tokopedia_reviews(url: str):
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
-            headless=False,   # ❗ jangan headless (anti detect)
+            headless=False,  # ❗ jangan headless (anti detect)
             slow_mo=80
         )
 
-        page = await browser.new_page()
-        await page.goto(review_url, timeout=60000)
-
-        # ===============================
-        # 1. Pastikan review muncul
-        # ===============================
         try:
-            await page.wait_for_selector("#review-feed", timeout=20000)
-            print("✅ Halaman review siap")
-        except:
-            await browser.close()
-            return []
+            page = await browser.new_page()
+            await page.goto(review_url, timeout=60000)
 
-        # ===============================
-        # 2. Sorting TERBARU
-        # ===============================
-        try:
-            await page.click('button[data-testid="reviewSorting"]')
-            await asyncio.sleep(1)
+            # ===============================
+            # 1. Pastikan review muncul
+            # ===============================
+            try:
+                await page.wait_for_selector("#review-feed", timeout=20000)
+                print("✅ Halaman review siap")
+            except:
+                return []
 
-            await page.get_by_text("Terbaru", exact=True).click()
-            await asyncio.sleep(3)
-            print("✅ Sorting TERBARU")
-        except:
-            print("⚠️ Gagal set sorting")
+            # ===============================
+            # 2. Sorting TERBARU
+            # ===============================
+            try:
+                await page.click('button[data-testid="reviewSorting"]')
+                await asyncio.sleep(1)
 
-        # ===============================
-        # 3. Pagination & Scraping
-        # ===============================
-        for laman in range(1, MAX_PAGE + 1):
-            print(f"📄 Ambil laman {laman}")
+                await page.get_by_text("Terbaru", exact=True).click()
+                await asyncio.sleep(3)
+                print("✅ Sorting TERBARU")
+            except:
+                print("⚠️ Gagal set sorting")
 
-            if laman > 1:
-                try:
-                    selector = f'button[aria-label="Laman {laman}"]'
-                    await page.wait_for_selector(selector, timeout=25000)
-                    await page.eval_on_selector(
-                        selector,
-                        "el => el.scrollIntoView({block: 'center'})"
-                    )
-                    await asyncio.sleep(1)
-                    await page.eval_on_selector(selector, "el => el.click()")
-                    await asyncio.sleep(3)
-                except:
-                    print(f"⛔ Gagal klik laman {laman}")
-                    break
+            # ===============================
+            # 3. Pagination & Scraping
+            # ===============================
+            for laman in range(1, MAX_PAGE + 1):
+                print(f"📄 Ambil laman {laman}")
 
-            nodes = await page.query_selector_all(
-                '#review-feed span[data-testid="lblItemUlasan"]'
-            )
-
-            for node in nodes:
-                try:
-                    parent = await node.evaluate_handle(
-                        "el => el.closest('p')"
-                    )
-
-                    btn = await parent.query_selector("button")
-                    if btn:
-                        txt = (await btn.inner_text()).lower()
-                        if "selengkapnya" in txt:
-                            await btn.click()
-                            await asyncio.sleep(0.4)
-
-                    text = (await node.inner_text()).strip()
-
-                    if text:
-                        raw_reviews.append(text)
-
-                    if len(raw_reviews) >= TARGET_REVIEWS:
+                if laman > 1:
+                    try:
+                        selector = f'button[aria-label="Laman {laman}"]'
+                        await page.wait_for_selector(selector, timeout=25000)
+                        await page.eval_on_selector(
+                            selector,
+                            "el => el.scrollIntoView({block: 'center'})"
+                        )
+                        await asyncio.sleep(1)
+                        await page.eval_on_selector(selector, "el => el.click()")
+                        await asyncio.sleep(3)
+                    except:
+                        print(f"⛔ Gagal klik laman {laman}")
                         break
 
-                except Exception as e:
-                    print("⚠️ Skip ulasan:", e)
+                nodes = await page.query_selector_all(
+                    '#review-feed span[data-testid="lblItemUlasan"]'
+                )
 
-            if len(raw_reviews) >= TARGET_REVIEWS:
-                break
+                for node in nodes:
+                    try:
+                        parent = await node.evaluate_handle(
+                            "el => el.closest('p')"
+                        )
 
-        await browser.close()
-        # return raw_reviews[:TARGET_REVIEWS]
+                        btn = await parent.query_selector("button")
+                        if btn:
+                            txt = (await btn.inner_text()).lower()
+                            if "selengkapnya" in txt:
+                                await btn.click()
+                                await asyncio.sleep(0.4)
+
+                        text = (await node.inner_text()).strip()
+
+                        if text:
+                            raw_reviews.append(text)
+
+                        if len(raw_reviews) >= TARGET_REVIEWS:
+                            break
+
+                    except Exception as e:
+                        print("⚠️ Skip ulasan:", e)
+
+                if len(raw_reviews) >= TARGET_REVIEWS:
+                    break
+
+        finally:
+            # ✅ Browser pasti tertutup walaupun error
+            await browser.close()
 
     # ===============================
     # 4. CLEANING + DEDUP

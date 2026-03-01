@@ -13,16 +13,9 @@ import httpx
 # ===============================
 app = FastAPI()
 
-app.mount(
-    "/static",
-    StaticFiles(directory="static"),
-    name="static"
-)
-
 templates = Jinja2Templates(directory="templates")
 
 MODEL_API_URL = "http://13.48.58.127:8000/summarize"
-
 
 # ===============================
 # ROUTES
@@ -48,11 +41,17 @@ async def summarize(
         # ===============================
         # 1. SCRAPING
         # ===============================
+        # SEMENJAK KITA PAKAI ASYNC playwright yang non-bloking sehingga kita tak perlu pakai smaphore multithred lagi. cukup pakai worker = 2
         scrapped_data = await scrape_tokopedia_reviews(product_url)
         if not scrapped_data:
             raise HTTPException(
-                status_code=404,
-                detail="Gagal melakukan scraping ulasan"
+                status_code=400,
+                detail="⚠️ Gagal melakukan scraping ulasan. Periksa kembali URL produk atau pastikan produk memiliki ulasan"
+            )
+        if scrapped_data["total_reviews"] < 5 :
+            raise HTTPException(
+                status_code=400,
+                detail="Produk memiliki terlalu sedikit ulasan, minimal 5 ulasan untuk dirangkum"
             )
         
         joined_text = scrapped_data["joined_text"].strip()
@@ -65,7 +64,7 @@ async def summarize(
                 detail="Ulasan kosong"
             )
         
-        print(f"Total ulasan: {scrapped_data['total_reviews']}")
+        print(f"ulasan: {scrapped_data['joined_text']}")
         
         # ===============================
         # 2. HIT MODEL SERVER
@@ -149,6 +148,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8001
+        port=8001 
     )
+    
 
