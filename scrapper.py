@@ -1,203 +1,172 @@
-import requests
-import json
-import csv
-import time
-import os
 
+from fastapi import HTTPException
+from scrapper import scrape_all_reviews
+from converter import get_product_id
+import emoji
+import re
 
-# ─────────────────────────────────────────────
-#  KONFIGURASI
-# ─────────────────────────────────────────────
-PRODUCT_ID   = "100227626831"   # ← ganti sesuai produk yang ingin di-scrape
-LIMIT        = 10               # jumlah review per halaman (maks 10)
-SORT_BY      = "time desc"
-FILTER_BY    = ""
-OUTPUT_FILE  = "reviews_output.csv"
-DELAY_SEC    = 1.0              # jeda antar request (detik) – jangan terlalu cepat
-
-
-# ─────────────────────────────────────────────
-#  HEADERS HTTP
-# ─────────────────────────────────────────────
-HEADERS = {
-    "accept": "*/*",
-    "bd-device-id": "7599816693359330817",
-    "content-type": "application/json",
-    "referer": "https://www.tokopedia.com/",
-    "sec-ch-ua": '"Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"',
-    "sec-ch-ua-mobile": "?1",
-    "sec-ch-ua-platform": '"Android"',
-    "user-agent": (
-        "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/145.0.0.0 Mobile Safari/537.36"
-    ),
-    "x-device": "desktop",
-    "x-price-center": "true",
-    "x-source": "tokopedia-lite",
-    "x-tkpd-lite-service": "zeus",
-    "x-tkpd-pdpb": "0",
-    "x-version": "a6610c6",
-}
-
-
-# ─────────────────────────────────────────────
-#  GRAPHQL QUERY
-# ─────────────────────────────────────────────
-GQL_QUERY = """
-query productReviewList($productID: String!, $page: Int!, $limit: Int!, $sortBy: String, $filterBy: String) {
-  productrevGetProductReviewList(productID: $productID, page: $page, limit: $limit, sortBy: $sortBy, filterBy: $filterBy) {
-    productID
-    list {
-      id: feedbackID
-      variantName
-      message
-      productRating
-      reviewCreateTime
-      reviewCreateTimestamp
-      isAnonymous
-      user {
-        userID
-        fullName
-        __typename
-      }
-      __typename
-    }
-    hasNext
-    totalReviews
-    __typename
-  }
-}
-"""
-
-
-# ─────────────────────────────────────────────
-#  FUNGSI FETCH SATU HALAMAN
-# ─────────────────────────────────────────────
-def fetch_reviews(product_id: str, page: int, limit: int = 10) -> dict | None:
-    payload = [
-        {
-            "operationName": "productReviewList",
-            "variables": {
-                "productID": product_id,
-                "page": page,
-                "limit": limit,
-                "sortBy": SORT_BY,
-                "filterBy": FILTER_BY,
-            },
-            "query": GQL_QUERY,
-        }
-    ]
-
-    try:
-        response = requests.post(
-            "https://gql.tokopedia.com/graphql/productReviewList",
-            headers=HEADERS,
-            json=payload,
-            timeout=15,
+def validate_tokopedia_url(url: str):
+    if "tokopedia.com" not in url:
+        raise HTTPException(
+            status_code=400,
+            detail="URL harus dari Tokopedia"
         )
-        response.raise_for_status()
-        data = response.json()
-        return data[0]["data"]["productrevGetProductReviewList"]
+def remove_gibberish(text, min_word_len=5, max_repeat_ratio=0.6):
+        if not isinstance(text, str):
+            return ""
 
-    except requests.exceptions.RequestException as e:
-        print(f"  [ERROR] Request gagal pada halaman {page}: {e}")
-        return None
-    except (KeyError, IndexError, json.JSONDecodeError) as e:
-        print(f"  [ERROR] Parsing respons gagal pada halaman {page}: {e}")
-        return None
+        words = text.split()
+        clean_words = []
 
+        for w in words:
+            # hapus simbol
+            word = re.sub(r'[^a-zA-Z]', '', w.lower())
 
-# ─────────────────────────────────────────────
-#  FUNGSI SCRAPE SEMUA HALAMAN
-# ─────────────────────────────────────────────
-def scrape_all_reviews(product_id: str, limit: int = 10, max_reviews: int = None) -> list[dict]:
-    all_messages = []
-    page = 1
+            if len(word) < min_word_len:
+                clean_words.append(w)
+                continue
 
-    print(f"\n{'='*50}")
-    print(f"  Mulai scraping Product ID: {product_id}")
-    if max_reviews:
-        print(f"  Target       : {max_reviews} review terbaru")
-    print(f"{'='*50}\n")
+            # hitung rasio karakter unik
+            unique_ratio = len(set(word)) / len(word)
 
-    while True:
-        print(f"  Mengambil halaman {page} ...", end=" ")
-        result = fetch_reviews(product_id, page, limit)
+            # kalau karakter unik terlalu sedikit → noise
+            if unique_ratio < (1 - max_repeat_ratio):
+                continue
 
-        if result is None:
-            print("SKIP (error)")
+            # cek ada vokal atau tidak
+            if not re.search(r'[aiueo]', word):
+                continue
+
+            clean_words.append(w)
+
+        return " ".join(clean_words)
+
+def remove_repeated_phrases(text, min_phrase_len=2):
+        words = text.split()
+        n = len(words)
+
+        result = []
+        i = 0
+
+        while i < n:
+            found = False
+
+            for size in range(min_phrase_len, (n - i) // 2 + 1):
+                phrase = words[i:i + size]
+
+                repeat = 1
+                while words[i + size * repeat:i + size * (repeat + 1)] == phrase:
+                    repeat += 1
+
+                if repeat > 1:
+                    result.extend(phrase)
+                    i += size * repeat
+                    found = True
+                    break
+
+            if not found:
+                result.append(words[i])
+                i += 1
+
+        return " ".join(result)
+
+def clean_review_text(text):
+        if not isinstance(text, str):
+            return ""
+
+        # 1. lowercase
+        text = text.lower()
+
+        # 2. hapus emoji
+        text = emoji.replace_emoji(text, replace="")
+
+        # 3. hapus emoticon
+        emot_pattern = r"""
+            (?:
+                [:=;][oO\-]?[D\)\]\(\]/\\OpP] |
+                [D\)\]\(\]/\\OpP][oO\-]?[=:;] |
+                <3 |
+                t_t |
+                x_x |
+                xd
+            )
+        """
+        text = re.sub(emot_pattern, "", text, flags=re.VERBOSE | re.IGNORECASE)
+
+        # 4. hapus ketawa
+        laughter_pattern = r'\b(?:ha|he|hi|ho|hu|wk|kw){2,}\b'
+        text = re.sub(laughter_pattern, ' ', text)
+
+        # 5. keyboard smash
+        random_word_pattern = r'\b[bcdfghjklmnpqrstvwxyz]{6,}\b'
+        text = re.sub(random_word_pattern, ' ', text)
+
+        # 6. karakter berlebih
+        text = re.sub(r'(.)\1{2,}', r'\1', text)
+
+        # 7. kata nempel
+        text = re.sub(r'\b(\w{2,})\1+\b', r'\1', text)
+
+        # 8. hapus titik
+        text = text.replace('.', ' ')
+
+        # 9. simbol
+        text = re.sub(r'[^a-z\s]', ' ', text)
+
+        # 10. karakter tunggal
+        text = re.sub(r'\b[a-z]\b', ' ', text)
+
+        # 11. kata berulang
+        text = re.sub(r'\b(\w+)\b(\s+\1){2,}', r'\1', text)
+
+        # 11a. frasa berulang atau kata tak beraturan
+        text = remove_repeated_phrases(text)
+        text = remove_gibberish(text)
+
+        # 12. rapikan spasi
+        text = re.sub(r'\s+', ' ', text).strip()
+
+        return text
+
+def scrap_40_reviews_tokopedia (url:str) -> str :
+    url = url
+    product_id = get_product_id(url)
+    graph_id = product_id["product_id"]
+    reviews = scrape_all_reviews(graph_id,max_reviews=70)
+    if reviews is None or len(reviews) < 5 :
+        raise HTTPException(
+            status_code=500,
+            detail="tidak terdapat review atau jumlah review kurang dari 5"
+        )
+    reviews_parsed = list ([r['message'] for r in reviews])
+    
+    seen = set()
+    result = []
+
+    for r in reviews_parsed:
+        if not r:
+            continue
+
+        cleaned = clean_review_text(r)
+
+        if cleaned and cleaned not in seen :
+            seen.add(cleaned)
+            result.append(cleaned)
+        if result and len(result) == 40 :
             break
+        
+    # ===============================
+    # 5. JOIN DENGAN TITIK
+    # ===============================
+    if result : 
+        joined_text = ". ".join(result) + "."
+    else :
+        joined_text = ""
 
-        reviews = result.get("list", [])
-        has_next = result.get("hasNext", False)
-        total    = result.get("totalReviews", "?")
-
-        if not reviews:
-            print("tidak ada data.")
-            break
-
-        for r in reviews:
-            all_messages.append({
-                "feedback_id"       : r.get("id", ""),
-                "variant"           : r.get("variantName", ""),
-                "message"           : r.get("message", "").replace("\n", " "),
-                "rating"            : r.get("productRating", ""),
-                "created_timestamp" : r.get("reviewCreateTimestamp", ""),
-                "user_name"         : r.get("user", {}).get("fullName", ""),
-                "is_anonymous"      : r.get("isAnonymous", False),
-            })
-
-            # ── Berhenti jika sudah capai target ──
-            if max_reviews and len(all_messages) >= max_reviews:
-                all_messages = all_messages[:max_reviews]  # trim jika kelebihan
-                print(f"OK  ({len(reviews)} ulasan | total: {len(all_messages)}/{total})")
-                print(f"\n  ✅ Target {max_reviews} review tercapai.")
-                return all_messages
-
-        print(f"OK  ({len(reviews)} ulasan | total sejauh ini: {len(all_messages)}/{total})")
-
-        if not has_next:
-            print("\n  Semua halaman sudah diambil.")
-            break
-
-        page += 1
-        time.sleep(DELAY_SEC)
-
-    return all_messages
+    return {
+        "total_reviews": len(result),
+        "joined_text": joined_text
+    }
+    
 
 
-# ─────────────────────────────────────────────
-#  SIMPAN KE CSV
-# ─────────────────────────────────────────────
-def save_to_csv(reviews: list[dict], filename: str) -> None:
-    if not reviews:
-        print("  Tidak ada data untuk disimpan.")
-        return
-
-    fieldnames = ["feedback_id", "variant", "message", "rating",
-                  "created_timestamp", "user_name", "is_anonymous"]
-
-    with open(filename, "w", newline="", encoding="utf-8-sig") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(reviews)
-
-    print(f"\n  ✅  Data tersimpan di: {os.path.abspath(filename)}")
-    print(f"  Total baris        : {len(reviews)}")
-
-
-# ─────────────────────────────────────────────
-#  MAIN
-# ─────────────────────────────────────────────
-if __name__ == "__main__":
-    reviews = scrape_all_reviews(PRODUCT_ID, LIMIT)
-    save_to_csv(reviews, OUTPUT_FILE)
-
-    # Tampilkan 3 contoh pesan
-    if reviews:
-        print("\n--- Contoh 3 pesan pertama ---")
-        for i, r in enumerate(reviews[:3], 1):
-            print(f"\n[{i}] Rating : {r['rating']} ⭐")
-            print(f"    Varian : {r['variant']}")
-            print(f"    Pesan  : {r['message']}")
