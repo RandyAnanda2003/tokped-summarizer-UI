@@ -1,241 +1,203 @@
-from fastapi import HTTPException
-from playwright.async_api import async_playwright
-import asyncio
-import emoji
-import re
-
-TARGET_REVIEWS = 60
-REVIEWS_PER_PAGE = 10
-MAX_PAGE = TARGET_REVIEWS // REVIEWS_PER_PAGE
-
-from urllib.parse import urlparse
-
-def to_review_url(url: str) -> str:
-    parsed = urlparse(url)
-    clean_path = parsed.path.rstrip("/")
-
-    if not clean_path.endswith("/review"):
-        clean_path += "/review"
-
-    return f"{parsed.scheme}://{parsed.netloc}{clean_path}"
-
-def validate_tokopedia_url(url: str):
-    if "tokopedia.com" not in url:
-        raise HTTPException(
-            status_code=400,
-            detail="URL harus dari Tokopedia"
-        )
-def remove_repeated_phrases(text, min_phrase_len=2):
-    words = text.split()
-    n = len(words)
-
-    result = []
-    i = 0
-
-    while i < n:
-        found = False
-
-        for size in range(min_phrase_len, (n - i) // 2 + 1):
-            phrase = words[i:i + size]
-
-            repeat = 1
-            while words[i + size * repeat:i + size * (repeat + 1)] == phrase:
-                repeat += 1
-
-            if repeat > 1:
-                result.extend(phrase)
-                i += size * repeat
-                found = True
-                break
-
-        if not found:
-            result.append(words[i])
-            i += 1
-
-    return " ".join(result)
+import requests
+import json
+import csv
+import time
+import os
 
 
-def clean_review_text(text):
-    if not isinstance(text, str):
-        return ""
+# ─────────────────────────────────────────────
+#  KONFIGURASI
+# ─────────────────────────────────────────────
+PRODUCT_ID   = "100227626831"   # ← ganti sesuai produk yang ingin di-scrape
+LIMIT        = 10               # jumlah review per halaman (maks 10)
+SORT_BY      = "time desc"
+FILTER_BY    = ""
+OUTPUT_FILE  = "reviews_output.csv"
+DELAY_SEC    = 1.0              # jeda antar request (detik) – jangan terlalu cepat
 
-    # 1. lowercase
-    text = text.lower()
 
-    # 2. hapus emoji
-    text = emoji.replace_emoji(text, replace="")
+# ─────────────────────────────────────────────
+#  HEADERS HTTP
+# ─────────────────────────────────────────────
+HEADERS = {
+    "accept": "*/*",
+    "bd-device-id": "7599816693359330817",
+    "content-type": "application/json",
+    "referer": "https://www.tokopedia.com/",
+    "sec-ch-ua": '"Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"',
+    "sec-ch-ua-mobile": "?1",
+    "sec-ch-ua-platform": '"Android"',
+    "user-agent": (
+        "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/145.0.0.0 Mobile Safari/537.36"
+    ),
+    "x-device": "desktop",
+    "x-price-center": "true",
+    "x-source": "tokopedia-lite",
+    "x-tkpd-lite-service": "zeus",
+    "x-tkpd-pdpb": "0",
+    "x-version": "a6610c6",
+}
 
-    # 3. hapus emoticon
-    emot_pattern = r"""
-        (?:
-            [:=;][oO\-]?[D\)\]\(\]/\\OpP] |
-            [D\)\]\(\]/\\OpP][oO\-]?[=:;] |
-            <3 |
-            t_t |
-            x_x |
-            xd
-        )
-    """
-    text = re.sub(emot_pattern, "", text, flags=re.VERBOSE | re.IGNORECASE)
 
-    # 4. hapus ketawa
-    laughter_pattern = r'\b(?:ha|he|hi|ho|hu|wk|kw){2,}\b'
-    text = re.sub(laughter_pattern, ' ', text)
-
-    # 5. keyboard smash
-    random_word_pattern = r'\b[bcdfghjklmnpqrstvwxyz]{6,}\b'
-    text = re.sub(random_word_pattern, ' ', text)
-
-    # 6. karakter berlebih
-    text = re.sub(r'(.)\1{2,}', r'\1', text)
-
-    # 7. kata nempel
-    text = re.sub(r'\b(\w{2,})\1+\b', r'\1', text)
-
-    # 8. hapus titik
-    text = text.replace('.', ' ')
-
-    # 9. simbol
-    text = re.sub(r'[^a-z\s]', ' ', text)
-
-    # 10. karakter tunggal
-    text = re.sub(r'\b[a-z]\b', ' ', text)
-
-    # 11. kata berulang
-    text = re.sub(r'\b(\w+)\b(\s+\1){2,}', r'\1', text)
-
-    # 11a. frasa berulang
-    text = remove_repeated_phrases(text)
-
-    # 12. rapikan spasi
-    text = re.sub(r'\s+', ' ', text).strip()
-
-    return text
-
-# ===============================
-# MAIN SCRAPER
-# ===============================
-async def scrape_tokopedia_reviews(url: str):
-    validate_tokopedia_url(url)
-
-    raw_reviews = []
-    review_url = to_review_url(url)
-
-    print(f"🔗 Buka URL: {review_url}")
-
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(
-            headless=False,  # ❗ jangan headless (anti detect)
-            slow_mo=80
-        )
-
-        try:
-            page = await browser.new_page()
-            await page.goto(review_url, timeout=60000)
-
-            # ===============================
-            # 1. Pastikan review muncul
-            # ===============================
-            try:
-                await page.wait_for_selector("#review-feed", timeout=20000)
-                print("✅ Halaman review siap")
-            except:
-                return []
-
-            # ===============================
-            # 2. Sorting TERBARU
-            # ===============================
-            try:
-                await page.click('button[data-testid="reviewSorting"]')
-                await asyncio.sleep(1)
-
-                await page.get_by_text("Terbaru", exact=True).click()
-                await asyncio.sleep(3)
-                print("✅ Sorting TERBARU")
-            except:
-                print("⚠️ Gagal set sorting")
-
-            # ===============================
-            # 3. Pagination & Scraping
-            # ===============================
-            for laman in range(1, MAX_PAGE + 1):
-                print(f"📄 Ambil laman {laman}")
-
-                if laman > 1:
-                    try:
-                        selector = f'button[aria-label="Laman {laman}"]'
-                        await page.wait_for_selector(selector, timeout=25000)
-                        await page.eval_on_selector(
-                            selector,
-                            "el => el.scrollIntoView({block: 'center'})"
-                        )
-                        await asyncio.sleep(1)
-                        await page.eval_on_selector(selector, "el => el.click()")
-                        await asyncio.sleep(3)
-                    except:
-                        print(f"⛔ Gagal klik laman {laman}")
-                        break
-
-                nodes = await page.query_selector_all(
-                    '#review-feed span[data-testid="lblItemUlasan"]'
-                )
-
-                for node in nodes:
-                    try:
-                        parent = await node.evaluate_handle(
-                            "el => el.closest('p')"
-                        )
-
-                        btn = await parent.query_selector("button")
-                        if btn:
-                            txt = (await btn.inner_text()).lower()
-                            if "selengkapnya" in txt:
-                                await btn.click()
-                                await asyncio.sleep(0.4)
-
-                        text = (await node.inner_text()).strip()
-
-                        if text:
-                            raw_reviews.append(text)
-
-                        if len(raw_reviews) >= TARGET_REVIEWS:
-                            break
-
-                    except Exception as e:
-                        print("⚠️ Skip ulasan:", e)
-
-                if len(raw_reviews) >= TARGET_REVIEWS:
-                    break
-
-        finally:
-            # ✅ Browser pasti tertutup walaupun error
-            await browser.close()
-
-    # ===============================
-    # 4. CLEANING + DEDUP
-    # ===============================
-    cleaned_reviews = []
-    seen = set()
-
-    for review in raw_reviews:
-        cleaned = clean_review_text(review)
-        if cleaned and cleaned not in seen:
-            seen.add(cleaned)
-            cleaned_reviews.append(cleaned)
-
-    # ===============================
-    # 5. JOIN DENGAN TITIK
-    # ===============================
-    if cleaned_reviews : 
-        joined_text = ". ".join(cleaned_reviews) + "."
-    else :
-        joined_text = ""
-
-    print(f"✅ Total review bersih: {len(cleaned_reviews)}")
-
-    return {
-        "total_reviews": len(cleaned_reviews),
-        "joined_text": joined_text
+# ─────────────────────────────────────────────
+#  GRAPHQL QUERY
+# ─────────────────────────────────────────────
+GQL_QUERY = """
+query productReviewList($productID: String!, $page: Int!, $limit: Int!, $sortBy: String, $filterBy: String) {
+  productrevGetProductReviewList(productID: $productID, page: $page, limit: $limit, sortBy: $sortBy, filterBy: $filterBy) {
+    productID
+    list {
+      id: feedbackID
+      variantName
+      message
+      productRating
+      reviewCreateTime
+      reviewCreateTimestamp
+      isAnonymous
+      user {
+        userID
+        fullName
+        __typename
+      }
+      __typename
     }
+    hasNext
+    totalReviews
+    __typename
+  }
+}
+"""
 
 
+# ─────────────────────────────────────────────
+#  FUNGSI FETCH SATU HALAMAN
+# ─────────────────────────────────────────────
+def fetch_reviews(product_id: str, page: int, limit: int = 10) -> dict | None:
+    payload = [
+        {
+            "operationName": "productReviewList",
+            "variables": {
+                "productID": product_id,
+                "page": page,
+                "limit": limit,
+                "sortBy": SORT_BY,
+                "filterBy": FILTER_BY,
+            },
+            "query": GQL_QUERY,
+        }
+    ]
+
+    try:
+        response = requests.post(
+            "https://gql.tokopedia.com/graphql/productReviewList",
+            headers=HEADERS,
+            json=payload,
+            timeout=15,
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data[0]["data"]["productrevGetProductReviewList"]
+
+    except requests.exceptions.RequestException as e:
+        print(f"  [ERROR] Request gagal pada halaman {page}: {e}")
+        return None
+    except (KeyError, IndexError, json.JSONDecodeError) as e:
+        print(f"  [ERROR] Parsing respons gagal pada halaman {page}: {e}")
+        return None
+
+
+# ─────────────────────────────────────────────
+#  FUNGSI SCRAPE SEMUA HALAMAN
+# ─────────────────────────────────────────────
+def scrape_all_reviews(product_id: str, limit: int = 10, max_reviews: int = None) -> list[dict]:
+    all_messages = []
+    page = 1
+
+    print(f"\n{'='*50}")
+    print(f"  Mulai scraping Product ID: {product_id}")
+    if max_reviews:
+        print(f"  Target       : {max_reviews} review terbaru")
+    print(f"{'='*50}\n")
+
+    while True:
+        print(f"  Mengambil halaman {page} ...", end=" ")
+        result = fetch_reviews(product_id, page, limit)
+
+        if result is None:
+            print("SKIP (error)")
+            break
+
+        reviews = result.get("list", [])
+        has_next = result.get("hasNext", False)
+        total    = result.get("totalReviews", "?")
+
+        if not reviews:
+            print("tidak ada data.")
+            break
+
+        for r in reviews:
+            all_messages.append({
+                "feedback_id"       : r.get("id", ""),
+                "variant"           : r.get("variantName", ""),
+                "message"           : r.get("message", "").replace("\n", " "),
+                "rating"            : r.get("productRating", ""),
+                "created_timestamp" : r.get("reviewCreateTimestamp", ""),
+                "user_name"         : r.get("user", {}).get("fullName", ""),
+                "is_anonymous"      : r.get("isAnonymous", False),
+            })
+
+            # ── Berhenti jika sudah capai target ──
+            if max_reviews and len(all_messages) >= max_reviews:
+                all_messages = all_messages[:max_reviews]  # trim jika kelebihan
+                print(f"OK  ({len(reviews)} ulasan | total: {len(all_messages)}/{total})")
+                print(f"\n  ✅ Target {max_reviews} review tercapai.")
+                return all_messages
+
+        print(f"OK  ({len(reviews)} ulasan | total sejauh ini: {len(all_messages)}/{total})")
+
+        if not has_next:
+            print("\n  Semua halaman sudah diambil.")
+            break
+
+        page += 1
+        time.sleep(DELAY_SEC)
+
+    return all_messages
+
+
+# ─────────────────────────────────────────────
+#  SIMPAN KE CSV
+# ─────────────────────────────────────────────
+def save_to_csv(reviews: list[dict], filename: str) -> None:
+    if not reviews:
+        print("  Tidak ada data untuk disimpan.")
+        return
+
+    fieldnames = ["feedback_id", "variant", "message", "rating",
+                  "created_timestamp", "user_name", "is_anonymous"]
+
+    with open(filename, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(reviews)
+
+    print(f"\n  ✅  Data tersimpan di: {os.path.abspath(filename)}")
+    print(f"  Total baris        : {len(reviews)}")
+
+
+# ─────────────────────────────────────────────
+#  MAIN
+# ─────────────────────────────────────────────
+if __name__ == "__main__":
+    reviews = scrape_all_reviews(PRODUCT_ID, LIMIT)
+    save_to_csv(reviews, OUTPUT_FILE)
+
+    # Tampilkan 3 contoh pesan
+    if reviews:
+        print("\n--- Contoh 3 pesan pertama ---")
+        for i, r in enumerate(reviews[:3], 1):
+            print(f"\n[{i}] Rating : {r['rating']} ⭐")
+            print(f"    Varian : {r['variant']}")
+            print(f"    Pesan  : {r['message']}")
