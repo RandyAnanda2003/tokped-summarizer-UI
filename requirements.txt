@@ -3,3 +3,6 @@ uvicorn
 playwright
 emoji
 jinja2
+requests
+httpx
+python-multipart
