@@ -11,6 +11,7 @@ import httpx
 # ===============================
 # APP INIT
 # ===============================
+# KARENA BUKAN PROSES BLOCKING, MAKA TIDAK PERLU MENGGUNAKAN THREADPOOL , CUKUP GUNAKAN WORKER = 2/3
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
@@ -41,7 +42,6 @@ async def summarize(
         # ===============================
         # 1. SCRAPING
         # ===============================
-        # SEMENJAK KITA PAKAI ASYNC playwright yang non-bloking sehingga kita tak perlu pakai smaphore multithred lagi. cukup pakai worker = 2
         scrapped_data = await scrap_40_reviews_tokopedia(url=product_url)
         if not scrapped_data:
             raise HTTPException(
