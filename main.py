@@ -122,6 +122,7 @@ async def summarize(
             "index.html",
             {
                 "request": request,
+                "ulasan yang diringkas" : joined_text,
                 "summary": html_summary,
                 "jumlah_ulasan": scrapped_data["total_reviews"],
                 "error": None,
@@ -151,4 +152,5 @@ if __name__ == "__main__":
         port=8001 
     )
     
+
 
