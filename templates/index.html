@@ -548,6 +548,40 @@
             font-size: 0.82rem;
             color: var(--gray-4);
         }
+		.review-stack{
+		    margin-top:25px;
+		    border-top:1px solid #eee;
+		    padding-top:15px;
+		}
+		
+		.review-stack-header{
+		    display:flex;
+		    justify-content:space-between;
+		    align-items:center;
+		}
+		
+		.toggle-btn{
+		    background:#00AA5B;
+		    color:white;
+		    border:none;
+		    padding:6px 12px;
+		    border-radius:6px;
+		    cursor:pointer;
+		}
+		
+		.review-container{
+		    margin-top:10px;
+		    max-height:250px;
+		    overflow-y:auto;
+		    background:#fafafa;
+		    border-radius:6px;
+		    padding:10px;
+		}
+		
+		.review-text{
+		    white-space:pre-wrap;
+		    font-size:14px;
+		}
 
         /* ── FEATURES ── */
         .features-section {
@@ -857,31 +891,54 @@
     </div>
     {% endif %}
 
-    <!-- RESULT -->
-    {% if summary %}
-    <section class="result-section">
-        <div class="result-header">
-            <div class="result-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                </svg>
-            </div>
-            <div>
-                <div class="result-title">Ringkasan Ulasan</div>
-                <div class="result-meta">Dianalisis dari {{ jumlah_ulasan }} ulasan pembeli</div>
-            </div>
-        </div>
-        <div class="result-body result-text ">
-             {{ summary | safe }}
-        </div>
-        <div class="result-footer">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            Summary berhasil dibuat dari <strong>{{ jumlah_ulasan }}</strong> ulasan terverifikasi
-        </div>
-    </section>
-    {% endif %}
+	<!-- RESULT -->
+	{% if summary %}
+	<section class="result-section">
+	    
+	    <div class="result-header">
+	        <div class="result-icon">
+	            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+	            </svg>
+	        </div>
+	
+	        <div>
+	            <div class="result-title">Ringkasan Ulasan</div>
+	            <div class="result-meta">
+	                Dianalisis dari {{ jumlah_ulasan }} ulasan pembeli
+	            </div>
+	        </div>
+	    </div>
+	
+	    <!-- SUMMARY -->
+	    <div class="result-body result-text">
+	        {{ summary | safe }}
+	    </div>
+	
+	    <div class="result-footer">
+	        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+	            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+	            <polyline points="22 4 12 14.01 9 11.01"/>
+	        </svg>
+	        Summary berhasil dibuat dari <strong>{{ jumlah_ulasan }}</strong> ulasan terverifikasi
+	    </div>
+	
+	    <!-- ORIGINAL REVIEWS -->
+	    <div class="review-stack">
+	
+	        <div class="review-stack-header">
+	            <h3>Ulasan Asli Pengguna</h3>
+	            <button onclick="toggleReviews()" class="toggle-btn">
+	                Lihat Ulasan
+	            </button>
+	        </div>
+	
+	        <div id="reviewContainer" class="review-container" style="display:none;">
+	            <pre class="review-text">{{ original_review }}</pre>
+	        </div>
+	    </div>
+	</section>
+	{% endif %}
 
     <!-- FEATURES -->
     <section class="features-section">
@@ -945,6 +1002,19 @@ document.getElementById("summaryForm").addEventListener("submit", function () {
     document.getElementById("loadingModal").classList.add("active");
     document.getElementById("submitBtn").disabled = true;
 });
+
+function toggleReviews(){
+    const container = document.getElementById("reviewContainer");
+    const btn = document.querySelector(".toggle-btn");
+
+    if(container.style.display === "none"){
+        container.style.display = "block";
+        btn.textContent = "Sembunyikan Ulasan";
+    } else {
+        container.style.display = "none";
+        btn.textContent = "Lihat Ulasan";
+    }
+}
 
 function copySampleUrl() {
     const sampleUrl = document.querySelector('.sample-box-url').textContent.trim();
@@ -1027,5 +1097,6 @@ if (urlParam) {
 
 </body>
 </html>
+
 
 
