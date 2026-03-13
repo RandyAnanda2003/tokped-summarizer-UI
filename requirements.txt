@@ -6,3 +6,4 @@ jinja2
 requests
 httpx
 python-multipart
+slowapi

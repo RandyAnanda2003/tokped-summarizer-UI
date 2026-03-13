@@ -57,7 +57,7 @@ app.add_middleware(SlowAPIMiddleware)
 ALLOWED_ORIGINS = [
     "http://localhost:8001",
     "http://localhost:3000",
-    # "54.255.188.16",        # ← tambahkan ini
+    "54.255.188.16",    
     # "https://yourdomain.com",  # ← tambahkan domain production kamu di sini/IP disini
 ]
 
@@ -80,8 +80,7 @@ app.add_middleware(
     allowed_hosts=[
         "localhost",
         "127.0.0.1",
-        # "http://54.255.188.16",        # ← tambahkan ini
-        # "http://54.255.188.16:8001",   # ← kalau pakai port spesifik
+        "54.255.188.16",   
         # "yourdomain.com",   # ← tambahkan domain production kamu
     ],
 )
