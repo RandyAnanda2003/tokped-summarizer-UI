@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from scrap_orcess import scrap_40_reviews_tokopedia
+from converter import validate_tokopedia_url
 import uvicorn
 import re
 import httpx
@@ -45,7 +46,13 @@ async def summarize(
         # ===============================
         # 1. SCRAPING
         # ===============================
-        scrapped_data = await scrap_40_reviews_tokopedia(url=product_url)
+        url = validate_tokopedia_url(product_url) 
+        if not url :
+            raise HTTPException(
+                status_code=500,
+                detail="URL yang anda masukan salah, silakan coba lagi"
+            )
+        scrapped_data = await scrap_40_reviews_tokopedia(url=url)
         if not scrapped_data:
             raise HTTPException(
                 status_code=400,

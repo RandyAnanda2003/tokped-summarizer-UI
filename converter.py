@@ -2,6 +2,7 @@ import requests
 import json
 import re
 from urllib.parse import urlparse
+from fastapi import HTTPException
 
 
 # ─────────────────────────────────────────────
@@ -206,3 +207,34 @@ if __name__ == "__main__":
             print(f"     Status      : {result['status']}\n")
         else:
             print("  ❌ Gagal. Pastikan URL valid.\n")
+            
+
+def validate_tokopedia_url(url: str):
+    try:
+        if "tk.tokopedia.com" in url:
+            # Coba HEAD dulu, fallback ke GET kalau gagal
+            try:
+                res = requests.head(url, allow_redirects=True, timeout=10, headers=HEADERS)
+                url = res.url
+            except requests.RequestException:
+                res = requests.get(url, allow_redirects=True, timeout=10, headers=HEADERS, stream=True)
+                url = res.url
+                res.close()
+
+        domain = urlparse(url).netloc
+
+        if "tokopedia.com" not in domain:
+            raise HTTPException(
+                status_code=400,
+                detail="URL harus dari Tokopedia"
+            )
+
+        return url
+
+    except HTTPException:
+        raise  # Re-raise HTTPException agar tidak tertangkap sebagai RequestException
+    except requests.RequestException as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"URL tidak dapat diakses: {str(e)}"
+        )

@@ -5,13 +5,7 @@ from converter import get_product_id
 import emoji
 import re
 
-def validate_tokopedia_url(url: str):
-    if "tokopedia.com" not in url:
-        raise HTTPException(
-            status_code=400,
-            detail="URL harus dari Tokopedia"
-        )
-
+      
 def remove_gibberish(text, min_word_len=5, unique_ratio_threshold=0.5,
                      min_vowel_ratio=0.2, max_consonant_run=5):
 
