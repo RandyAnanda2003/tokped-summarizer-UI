@@ -13,7 +13,8 @@
             --green-light: #00C96D;
             --green-dark: #007A40;
             --green-muted: #E8F7EF;
-            --orange: #FF5733;
+            --orange: #FF6224;
+            --orange-dark: #e5521a;
             --black: #0A0A0A;
             --gray-1: #1A1A1A;
             --gray-2: #2E2E2E;
@@ -34,9 +35,7 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -186,14 +185,19 @@
 
         /* ── MAIN ── */
         main {
+            width: 100%;
+        }
+
+        /* ── PAGE WRAPPER ── */
+        .page-wrapper {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 0 2rem;
         }
 
         /* ── HERO ── */
         .hero {
-            padding: 4rem 0 3rem;
+            padding: 4rem 3rem 3rem;
             border-bottom: 1px solid var(--gray-5);
             animation: fadeInUp 0.7s ease both;
         }
@@ -214,7 +218,6 @@
         }
 
         .hero-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: clamp(2rem, 5vw, 3.25rem);
             font-weight: 800;
             line-height: 1.1;
@@ -234,6 +237,53 @@
             color: var(--gray-3);
             max-width: 560px;
             line-height: 1.7;
+        }
+        /* ── HERO INNER LAYOUT ── */
+        .hero-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        /* ── HERO IMAGE ── */
+        .hero-img-box {
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+            transform: perspective(900px) rotateY(-6deg) rotateX(3deg);
+            transition: transform 0.6s ease;
+            aspect-ratio: 4/3;
+            width: 100%;
+        }
+
+        .hero-img-box:hover {
+            transform: perspective(900px) rotateY(0deg) rotateX(0deg);
+        }
+
+        .hero-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .img-placeholder {
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #005DCE 0%, #79AFFF 60%, #E4F5FE 100%);
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .img-placeholder p {
+            font-size: 0.78rem;
+            color: rgba(0,93,206,0.6);
+            margin-top: 0.5rem;
         }
 
         /* ── STEPS ── */
@@ -262,16 +312,12 @@
             background: var(--gray-6);
             border-radius: var(--radius-lg);
             padding: 1.75rem;
-            position: relative;
             transition: background 0.2s ease;
         }
 
-        .step-card:hover {
-            background: var(--green-muted);
-        }
+        .step-card:hover { background: var(--green-muted); }
 
         .step-num {
-            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 0.72rem;
             font-weight: 800;
             color: var(--white);
@@ -282,7 +328,6 @@
             width: 32px;
             height: 32px;
             border-radius: 999px;
-            line-height: 1;
             margin-bottom: 1.25rem;
             letter-spacing: 0.03em;
         }
@@ -327,7 +372,6 @@
         }
 
         .form-left h2 {
-            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: clamp(1.5rem, 3vw, 2.25rem);
             font-weight: 800;
             letter-spacing: -0.025em;
@@ -348,9 +392,7 @@
             padding: 2rem;
         }
 
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
+        .form-group { margin-bottom: 1.25rem; }
 
         .form-label {
             display: block;
@@ -375,9 +417,7 @@
             outline: none;
         }
 
-        .form-input::placeholder {
-            color: var(--gray-3);
-        }
+        .form-input::placeholder { color: var(--gray-3); }
 
         .form-input:focus {
             border-color: var(--green);
@@ -442,15 +482,52 @@
             transform: translateY(-1px);
         }
 
-        .submit-btn:active {
-            transform: translateY(0);
-        }
+        .submit-btn:active { transform: translateY(0); }
 
         .submit-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
+
+        /* ── TOKOPEDIA CTA ── */
+        .tokopedia-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        .tokopedia-cta-text {
+            font-size: 0.82rem;
+            color: var(--gray-3);
+            line-height: 1.55;
+        }
+
+        .tokopedia-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1rem;
+            background: var(--green-dark);
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s ease, transform 0.15s ease;
+            box-shadow: 0 2px 8px rgba(255, 98, 36, 0.35);
+            flex-shrink: 0;
+        }
+
+        .tokopedia-btn:hover {
+            background: var(--orange-dark);
+            transform: translateY(-1px);
+        }
+
+        .tokopedia-btn:active { transform: translateY(0); }
 
         /* ── ERROR ── */
         .error-box {
@@ -464,10 +541,7 @@
             gap: 0.75rem;
         }
 
-        .error-box svg {
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
+        .error-box svg { flex-shrink: 0; margin-top: 1px; }
 
         .error-title {
             font-weight: 700;
@@ -507,7 +581,6 @@
         }
 
         .result-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.35rem;
             font-weight: 700;
             letter-spacing: -0.02em;
@@ -531,14 +604,12 @@
             line-height: 1.8;
         }
 
-	.result-text ul {
-    	   padding-left: 20px;
-           margin-top: 10px;
-	}
+        .result-text ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
 
-	.result-text li {
-           margin-bottom: 8px;
-	}		
+        .result-text li { margin-bottom: 8px; }
 
         .result-footer {
             display: flex;
@@ -548,40 +619,93 @@
             font-size: 0.82rem;
             color: var(--gray-4);
         }
-		.review-stack{
-		    margin-top:25px;
-		    border-top:1px solid #eee;
-		    padding-top:15px;
-		}
-		
-		.review-stack-header{
-		    display:flex;
-		    justify-content:space-between;
-		    align-items:center;
-		}
-		
-		.toggle-btn{
-		    background:#00AA5B;
-		    color:white;
-		    border:none;
-		    padding:6px 12px;
-		    border-radius:6px;
-		    cursor:pointer;
-		}
-		
-		.review-container{
-		    margin-top:10px;
-		    max-height:250px;
-		    overflow-y:auto;
-		    background:#fafafa;
-		    border-radius:6px;
-		    padding:10px;
-		}
-		
-		.review-text{
-		    white-space:pre-wrap;
-		    font-size:14px;
-		}
+
+        /* ── SURVEY CTA ── */
+        .survey-cta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--green-muted);
+            border: 1px solid #C6EDD9;
+            border-radius: var(--radius-lg);
+            margin-top: 1.25rem;
+            text-align: center;
+        }
+
+        .survey-cta-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--gray-2);
+            margin-bottom: 0.2rem;
+        }
+
+        .survey-cta-desc {
+            font-size: 0.8rem;
+            color: var(--gray-4);
+            line-height: 1.5;
+        }
+
+        .survey-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.25rem;
+            background: var(--green);
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.15s ease;
+            box-shadow: 0 2px 8px rgba(0, 170, 91, 0.3);
+        }
+
+        .survey-btn:hover {
+            background: var(--green-light);
+            transform: translateY(-1px);
+        }
+
+        /* ── REVIEWS ── */
+        .review-stack {
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .review-stack-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.82rem;
+        }
+
+        .review-container {
+            margin-top: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .review-text {
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
 
         /* ── FEATURES ── */
         .features-section {
@@ -651,6 +775,9 @@
         .footer-left {
             font-size: 0.82rem;
             color: var(--gray-4);
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
         }
 
         .footer-right {
@@ -679,49 +806,88 @@
             100% { width: 95%; }
         }
 
-        /* ── MOBILE RESPONSIVE ── */
-        @media (max-width: 768px) {
-            header { padding: 1rem 1.25rem; }
+        /* ── RESPONSIVE ── */
 
-            .logo-text { font-size: 0.9rem; }
-
-            main { padding: 0 1.25rem; }
-
-            .hero { padding: 2.5rem 0 2rem; }
-
-            .hero-title { font-size: 2rem; }
-
-            .steps-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .step-card { padding: 1.5rem; }
-
-            .form-layout {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .form-right { padding: 1.5rem; }
-
-            .features-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .result-body { padding: 1.5rem; }
-
-            .footer-inner { flex-direction: column; text-align: center; }
+        /* Tablet landscape & small desktop (max 1024px) */
+        @media (max-width: 1024px) {
+            .page-wrapper { padding: 0 1.75rem; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-layout { gap: 2rem; }
         }
 
-        @media (max-width: 420px) {
-            .hero-title { font-size: 1.65rem; }
+        /* Tablet portrait (max 768px) */
+        @media (max-width: 768px) {
+            header { padding: 1rem 1.25rem; }
+            .logo-text { font-size: 0.9rem; }
 
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
+            .page-wrapper { padding: 0 1.25rem; }
+
+            .hero { padding: 2.5rem 0 2rem; }
+            .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+            .hero-title { font-size: 2rem; }
+            .hero-desc { font-size: 0.92rem; }
+
+            .steps-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .step-card { padding: 1.5rem; }
+
+            .form-layout { grid-template-columns: 1fr; gap: 2rem; }
+            .form-right { padding: 1.5rem; border-radius: var(--radius-lg); }
+
+            .tokopedia-cta { flex-direction: column; align-items: stretch; }
+            .tokopedia-btn { width: 100%; justify-content: center; }
+
+            .features-grid { grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+
+            .result-body { padding: 1.5rem 1.25rem; border-radius: var(--radius-lg); }
+            .result-header { gap: 0.75rem; }
+
+            .survey-cta { padding: 1rem 1.25rem; }
+
+            .footer-inner { flex-direction: column; text-align: center; gap: 0.5rem; }
+            .footer-right { text-align: center; }
+        }
+
+        /* Large mobile (max 580px) */
+        @media (max-width: 580px) {
+            .page-wrapper { padding: 0 1rem; }
+
+            .hero { padding: 2rem 0 1.75rem; }
+            .hero-title { font-size: 1.8rem; }
+
+            .steps-section { padding: 2.5rem 0; }
+            .form-section { padding: 2.5rem 0; }
+            .features-section { padding: 2.5rem 0 3rem; }
+            .result-section { padding: 2.5rem 0; }
+
+            .form-right { padding: 1.25rem; }
+
+            .result-body { padding: 1.25rem 1rem; }
+            .result-title { font-size: 1.1rem; }
+            .result-icon { width: 44px; height: 44px; }
+        }
+
+        /* Small mobile (max 420px) */
+        @media (max-width: 420px) {
+            .page-wrapper { padding: 0 0.875rem; }
+
+            .hero-title { font-size: 1.55rem; }
+            .hero-tag { font-size: 0.7rem; }
 
             .header-badge { display: none; }
+            .logo-text { font-size: 0.85rem; }
+
+            .features-grid { grid-template-columns: 1fr; }
+            .feature-card { padding: 1.25rem; }
+
+            .form-right { padding: 1rem; border-radius: var(--radius-md); }
+            .submit-btn { font-size: 0.88rem; padding: 0.9rem 1rem; }
+
+            .modal-card { padding: 1.75rem 1.25rem; }
+
+            .step-card { padding: 1.25rem; }
+            .step-title { font-size: 0.88rem; }
+
+            .footer-inner { padding: 0 0.5rem; }
         }
     </style>
 </head>
@@ -737,9 +903,7 @@
             </svg>
         </div>
         <div class="modal-title">Sedang Memproses...</div>
-        <div class="modal-desc">
-            AI kami sedang menganalisis beberapa ulasan produk terbaru
-        </div>
+        <div class="modal-desc">AI kami sedang menganalisis beberapa ulasan produk terbaru</div>
         <div class="progress-bar">
             <div class="progress-fill"></div>
         </div>
@@ -772,22 +936,47 @@
 
 <!-- ── MAIN ── -->
 <main>
+<div class="page-wrapper">
 
-    <!-- HERO -->
+<!-- HERO -->
     <section class="hero">
-        <div class="hero-tag">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            T5 AI · Analisis Ulasan Tokopedia
+        <div class="hero-inner">
+            <!-- Teks kiri -->
+            <div class="hero-content">
+                <div class="hero-tag">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    T5 AI · Analisis Ulasan Tokopedia
+                </div>
+                <h1 class="hero-title">
+                    Malas baca review, tapi takut<br>
+                    barang <em>bodong?</em>
+                </h1>
+                <p class="hero-desc">
+                    Masukkan URL produk Tokopedia dan dapatkan ringkasan ulasan yang jelas dan objektif dari ulasan-ulasan terbaru pembeli asli.
+                </p>
+            </div>
+
+            <!-- Gambar kanan -->
+            <div class="hero-img-box">
+                <img
+                    src="../static/tokped.png"
+                    alt="Banner Review Summary Tokopedia"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                />
+                <div class="img-placeholder" style="display:none;">
+                    <div>
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#005DCE" stroke-width="1.5" style="opacity:0.4; display:block; margin:0 auto 0.75rem;">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <p>Ganti src dengan path foto hero kamu</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h1 class="hero-title">
-            Malas baca review, tapi takut<br>
-            barang <em>bodong?</em>
-        </h1>
-        <p class="hero-desc">
-            Masukkan URL produk Tokopedia dan dapatkan ringkasan ulasan yang jelas dan objektif dari ulasan-ulasan terbaru pembeli asli.
-        </p>
     </section>
 
     <!-- STEPS -->
@@ -835,7 +1024,27 @@
         <div class="form-layout">
             <div class="form-left">
                 <h2>Mulai analisis<br>review sekarang</h2>
-                <p>Masukkan URL produk Tokopedia untuk mendapatkan ringkasan objektif berdasarkan 40–60 ulasan pembeli terverifikasi terbaru.</p>
+                <p>Masukkan URL produk Tokopedia untuk mendapatkan ringkasan objektif berdasarkan ~40 ulasan pembeli terbaru.</p>
+
+                <!-- Tokopedia CTA -->
+                <div class="tokopedia-cta">
+                    <p class="tokopedia-cta-text">
+                        Belum punya link? Gunakan link di contoh URL atau menuju ke Tokopedia sekarang
+                    </p>
+                    <a
+                        href="https://www.tokopedia.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="tokopedia-btn"
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/>
+                            <line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>
+                        Buka Tokopedia
+                    </a>
+                </div>
             </div>
             <div class="form-right">
                 <form method="POST" action="/summarize" id="summaryForm">
@@ -873,6 +1082,7 @@
                         </svg>
                         Generate Summary Sekarang
                     </button>
+
                 </form>
             </div>
         </div>
@@ -891,54 +1101,70 @@
     </div>
     {% endif %}
 
-	<!-- RESULT -->
-	{% if summary %}
-	<section class="result-section">
-	    
-	    <div class="result-header">
-	        <div class="result-icon">
-	            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-	                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-	            </svg>
-	        </div>
-	
-	        <div>
-	            <div class="result-title">Ringkasan Ulasan</div>
-	            <div class="result-meta">
-	                Dianalisis dari {{ jumlah_ulasan }} ulasan pembeli
-	            </div>
-	        </div>
-	    </div>
-	
-	    <!-- SUMMARY -->
-	    <div class="result-body result-text">
-	        {{ summary | safe }}
-	    </div>
-	
-	    <div class="result-footer">
-	        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-	            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-	            <polyline points="22 4 12 14.01 9 11.01"/>
-	        </svg>
-	        Summary berhasil dibuat dari <strong>{{ jumlah_ulasan }}</strong> ulasan terverifikasi
-	    </div>
-	
-	    <!-- ORIGINAL REVIEWS -->
-	    <div class="review-stack">
-	
-	        <div class="review-stack-header">
-	            <h3>Ulasan Asli Pengguna</h3>
-	            <button onclick="toggleReviews()" class="toggle-btn">
-	                Lihat Ulasan
-	            </button>
-	        </div>
-	
-	        <div id="reviewContainer" class="review-container" style="display:none;">
-	            <pre class="review-text">{{ original_review }}</pre>
-	        </div>
-	    </div>
-	</section>
-	{% endif %}
+    <!-- RESULT -->
+    {% if summary %}
+    <section class="result-section">
+
+        <div class="result-header">
+            <div class="result-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="result-title">Ringkasan Ulasan</div>
+                <div class="result-meta">Dianalisis dari {{ jumlah_ulasan }} ulasan pembeli</div>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="result-body result-text">
+            {{ summary | safe }}
+        </div>
+                <div class="result-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00AA5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Summary berhasil dibuat dari <strong>{{ jumlah_ulasan }}</strong> ulasan terverifikasi
+        </div>
+
+        <!-- ORIGINAL REVIEWS -->
+        <div class="review-stack">
+            <div class="review-stack-header">
+                <h3>Ulasan Asli Pengguna</h3>
+                <button onclick="toggleReviews()" class="toggle-btn">Lihat Ulasan</button>
+            </div>
+            <div id="reviewContainer" class="review-container" style="display:none;">
+                <pre class="review-text">{{ original_review }}</pre>
+            </div>
+        </div>
+
+        <!-- Survey CTA -->
+        <div class="survey-cta">
+            <div>
+                <p class="survey-cta-title">Sudah mencoba fitur ini?</p>
+                <p class="survey-cta-desc">Bantu kami berkembang dengan mengisi survei singkat pengujian web ini — hanya butuh 2 menit! 🙏</p>
+            </div>
+            <a
+                href="https://s.pnj.ac.id/form-kuesioner-hasil-pengujian-web-peringkas-ulasan-tokopedia"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="survey-btn"
+            >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                Isi Survei Sekarang
+            </a>
+        </div>
+
+    </section>
+    {% endif %}
 
     <!-- FEATURES -->
     <section class="features-section">
@@ -978,17 +1204,18 @@
                     </svg>
                 </div>
                 <div class="feature-title">Objektif</div>
-                <div class="feature-desc">Rangkuman dari 40–60 review pembeli terbaru yang terverifikasi</div>
+                <div class="feature-desc">Rangkuman dari ~40 review pembeli terbaru yang terverifikasi</div>
             </div>
         </div>
     </section>
 
+</div><!-- /.page-wrapper -->
 </main>
 
 <!-- ── FOOTER ── -->
 <footer>
     <div class="footer-inner">
-        <div class="footer-left flex flex-col">
+        <div class="footer-left">
             <span>Dibuat sebagai tugas akhir | Teknik Informatika</span>
             <span>Politeknik Negeri Jakarta 2026</span>
         </div>
@@ -1003,11 +1230,10 @@ document.getElementById("summaryForm").addEventListener("submit", function () {
     document.getElementById("submitBtn").disabled = true;
 });
 
-function toggleReviews(){
+function toggleReviews() {
     const container = document.getElementById("reviewContainer");
     const btn = document.querySelector(".toggle-btn");
-
-    if(container.style.display === "none"){
+    if (container.style.display === "none") {
         container.style.display = "block";
         btn.textContent = "Sembunyikan Ulasan";
     } else {
@@ -1020,72 +1246,49 @@ function copySampleUrl() {
     const sampleUrl = document.querySelector('.sample-box-url').textContent.trim();
     const input = document.querySelector('input[name="product_url"]');
 
-    navigator.clipboard.writeText(sampleUrl).then(function() {
-        // Also paste into the input field for convenience
+    navigator.clipboard.writeText(sampleUrl).then(function () {
         input.value = sampleUrl;
-
         const box = document.querySelector('.sample-box');
         box.style.borderColor = '#00AA5B';
         box.style.background = '#1E2E26';
-
-        const toast = document.createElement('div');
-        toast.textContent = 'URL berhasil disalin & ditempel!';
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #00AA5B;
-            color: white;
-            padding: 0.6rem 1.25rem;
-            border-radius: 999px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 10000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            white-space: nowrap;
-        `;
-        document.body.appendChild(toast);
-
+        showToast('URL berhasil disalin & ditempel!');
         setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
             box.style.borderColor = '';
             box.style.background = '';
         }, 2000);
-    }).catch(function() {
-        // Fallback for browsers that block clipboard API
+    }).catch(function () {
         input.value = sampleUrl;
         input.select();
         document.execCommand('copy');
-
-        const toast = document.createElement('div');
-        toast.textContent = 'URL berhasil disalin!';
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #00AA5B;
-            color: white;
-            padding: 0.6rem 1.25rem;
-            border-radius: 999px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 10000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            white-space: nowrap;
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-        }, 2000);
+        showToast('URL berhasil disalin!');
     });
+}
+
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #00AA5B;
+        color: white;
+        padding: 0.6rem 1.25rem;
+        border-radius: 999px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        white-space: nowrap;
+        transition: opacity 0.3s ease;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
 }
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -1097,8 +1300,3 @@ if (urlParam) {
 
 </body>
 </html>
-
-
-
-
-

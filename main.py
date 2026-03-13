@@ -6,6 +6,7 @@ from scrap_orcess import scrap_40_reviews_tokopedia
 import uvicorn
 import re
 import httpx
+from fastapi.staticfiles import StaticFiles
 
 
 # ===============================
@@ -16,7 +17,9 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
 
-MODEL_API_URL = "http://13.48.58.127:8000/summarize"
+MODEL_API_URL = "http://localhost:8000/summarize"
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ===============================
 # ROUTES

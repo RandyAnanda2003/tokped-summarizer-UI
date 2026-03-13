@@ -11,35 +11,50 @@ def validate_tokopedia_url(url: str):
             status_code=400,
             detail="URL harus dari Tokopedia"
         )
-def remove_gibberish(text, min_word_len=5, max_repeat_ratio=0.6):
-        if not isinstance(text, str):
-            return ""
 
-        words = text.split()
-        clean_words = []
+def remove_gibberish(text, min_word_len=5, unique_ratio_threshold=0.5,
+                     min_vowel_ratio=0.2, max_consonant_run=5):
 
-        for w in words:
-            # hapus simbol
-            word = re.sub(r'[^a-zA-Z]', '', w.lower())
+    if not isinstance(text, str):
+        return ""
 
-            if len(word) < min_word_len:
-                clean_words.append(w)
-                continue
+    words = text.split()
+    clean_words = []
 
-            # hitung rasio karakter unik
-            unique_ratio = len(set(word)) / len(word)
+    for w in words:
+        # normalisasi huruf
+        word = re.sub(r'[^a-zA-Z]', '', w.lower())
 
-            # kalau karakter unik terlalu sedikit → noise
-            if unique_ratio < (1 - max_repeat_ratio):
-                continue
+        # kalau kosong setelah dibersihkan
+        if not word:
+            continue
 
-            # cek ada vokal atau tidak
-            if not re.search(r'[aiueo]', word):
-                continue
-
+        # kata pendek biasanya masih valid (misal: "oke", "bagus")
+        if len(word) < min_word_len:
             clean_words.append(w)
+            continue
 
-        return " ".join(clean_words)
+        # 1️⃣ rasio karakter unik
+        unique_ratio = len(set(word)) / len(word)
+        if unique_ratio < unique_ratio_threshold:
+            continue
+
+        # 2️⃣ harus ada vokal
+        if not re.search(r'[aiueo]', word):
+            continue
+
+        # 3️⃣ rasio vokal
+        vowel_ratio = len(re.findall(r'[aiueo]', word)) / len(word)
+        if vowel_ratio < min_vowel_ratio:
+            continue
+
+        # 4️⃣ terlalu banyak konsonan beruntun
+        if re.search(rf'[bcdfghjklmnpqrstvwxyz]{{{max_consonant_run},}}', word):
+            continue
+
+        clean_words.append(w)
+
+    return " ".join(clean_words)
 
 def remove_repeated_phrases(text, min_phrase_len=2):
         words = text.split()
@@ -132,7 +147,7 @@ async def scrap_40_reviews_tokopedia (url:str) -> dict :
     url = url
     product_id = get_product_id(url)
     graph_id = product_id["product_id"]
-    reviews = scrape_all_reviews(graph_id,max_reviews=70)
+    reviews = scrape_all_reviews(graph_id,max_reviews=55)
     if reviews is None or len(reviews) < 5 :
         raise HTTPException(
             status_code=500,
@@ -152,13 +167,13 @@ async def scrap_40_reviews_tokopedia (url:str) -> dict :
         if cleaned and cleaned not in seen :
             seen.add(cleaned)
             result.append(cleaned)
-        if result and len(result) == 40 :
+        if result and len(result) == 45 :
             break
         
     # ===============================
     # 5. JOIN DENGAN TITIK
     # ===============================
-    if result : 
+    if len(result) >= 5  : 
         joined_text = ". ".join(result) + "."
     else :
         joined_text = ""
