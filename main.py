@@ -35,7 +35,11 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 # ===============================
 # APP INIT
 # ===============================
-app = FastAPI()
+app = FastAPI(
+    docs_url=None,    # matikan /docs
+    redoc_url=None,   # matikan /redoc
+    openapi_url=None, # matikan /openapi.json
+)
 
 # ===============================
 # SECURITY: RATE LIMIT HANDLER
@@ -53,7 +57,8 @@ app.add_middleware(SlowAPIMiddleware)
 ALLOWED_ORIGINS = [
     "http://localhost:8001",
     "http://localhost:3000",
-    # "https://yourdomain.com",  # ← tambahkan domain production kamu di sini
+    # "54.255.188.16",        # ← tambahkan ini
+    # "https://yourdomain.com",  # ← tambahkan domain production kamu di sini/IP disini
 ]
 
 app.add_middleware(
@@ -75,6 +80,8 @@ app.add_middleware(
     allowed_hosts=[
         "localhost",
         "127.0.0.1",
+        # "http://54.255.188.16",        # ← tambahkan ini
+        # "http://54.255.188.16:8001",   # ← kalau pakai port spesifik
         # "yourdomain.com",   # ← tambahkan domain production kamu
     ],
 )
