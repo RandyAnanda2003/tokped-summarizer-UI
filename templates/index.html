@@ -667,6 +667,21 @@
             background: var(--green-light);
             transform: translateY(-1px);
         }
+        /* ── 2 GAMBAR BAWAH TOMBOL ── */
+        .below-btn-images {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        .below-btn-img {
+            width: 100%;
+            border-radius: var(--radius-md);
+            object-fit: cover;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            display: block;
+        }
 
         /* ── REVIEWS ── */
         .review-stack {
@@ -1045,11 +1060,16 @@
                         Buka Tokopedia
                     </a>
                 </div>
+                <!-- ── 2 GAMBAR DI BAWAH TOMBOL TOKOPEDIA ── -->
+                <div class="below-btn-images">
+                    <img src="../static/navbar-share.jpeg" alt="Gambar 1" class="below-btn-img">
+                    <img src="../static/share-link-logo.jpeg" alt="Gambar 2" class="below-btn-img">
+                </div>
             </div>
             <div class="form-right">
                 <form method="POST" action="/summarize" id="summaryForm">
                     <div class="form-group">
-                        <label class="form-label">URL Produk Tokopedia</label>
+                        <label class="form-label">Masukan URL Produk Tokopedia DISINI ! 👇🏻</label>
                         <input
                             type="url"
                             name="product_url"
