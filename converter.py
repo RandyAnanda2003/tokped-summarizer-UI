@@ -238,3 +238,4 @@ def validate_tokopedia_url(url: str):
             status_code=400,
             detail=f"URL tidak dapat diakses: {str(e)}"
         )
+

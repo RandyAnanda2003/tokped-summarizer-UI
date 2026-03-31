@@ -117,8 +117,9 @@ def scrape_all_reviews(product_id: str, limit: int = 10, max_reviews: int = None
 
     print(f"\n{'='*50}")
     print(f"  Mulai scraping Product ID: {product_id}")
+    print(f"  Filter       : review dalam 1 tahun terakhir")
     if max_reviews:
-        print(f"  Target       : {max_reviews} review terbaru")
+        print(f"  Max reviews  : {max_reviews}")
     print(f"{'='*50}\n")
 
     while True:
@@ -129,7 +130,7 @@ def scrape_all_reviews(product_id: str, limit: int = 10, max_reviews: int = None
             print("SKIP (error)")
             break
 
-        reviews = result.get("list", [])
+        reviews  = result.get("list", [])
         has_next = result.get("hasNext", False)
         total    = result.get("totalReviews", "?")
 
@@ -138,6 +139,11 @@ def scrape_all_reviews(product_id: str, limit: int = 10, max_reviews: int = None
             break
 
         for r in reviews:
+            # Kondisi stop 1: review lebih dari 1 tahun
+            if "lebih dari 1 tahun" in r.get("reviewCreateTimestamp", "").lower():
+                print(f"\n  ⛔ Review lebih dari 1 tahun. Scraping dihentikan.")
+                return all_messages
+
             all_messages.append({
                 "feedback_id"       : r.get("id", ""),
                 "variant"           : r.get("variantName", ""),
@@ -148,10 +154,8 @@ def scrape_all_reviews(product_id: str, limit: int = 10, max_reviews: int = None
                 "is_anonymous"      : r.get("isAnonymous", False),
             })
 
-            # ── Berhenti jika sudah capai target ──
+            # Kondisi stop 2: sudah capai max_reviews
             if max_reviews and len(all_messages) >= max_reviews:
-                all_messages = all_messages[:max_reviews]  # trim jika kelebihan
-                print(f"OK  ({len(reviews)} ulasan | total: {len(all_messages)}/{total})")
                 print(f"\n  ✅ Target {max_reviews} review tercapai.")
                 return all_messages
 
@@ -165,7 +169,6 @@ def scrape_all_reviews(product_id: str, limit: int = 10, max_reviews: int = None
         time.sleep(DELAY_SEC)
 
     return all_messages
-
 
 # ─────────────────────────────────────────────
 #  SIMPAN KE CSV

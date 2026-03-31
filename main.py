@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request, Form, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -11,8 +12,9 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from scrap_orcess import scrap_40_reviews_tokopedia
-from converter import validate_tokopedia_url
+from scrap_orcess import scrap_orces_reviews_tokopedia
+from scrapper import scrape_all_reviews
+from converter import get_product_id, validate_tokopedia_url
 import uvicorn
 import re
 import httpx
@@ -190,7 +192,7 @@ async def summarize(
                 detail="URL yang anda masukan salah, silakan coba lagi",
             )
 
-        scrapped_data = await scrap_40_reviews_tokopedia(url=url)
+        scrapped_data = await scrap_orces_reviews_tokopedia(url=url)
         if not scrapped_data:
             raise HTTPException(
                 status_code=400,
@@ -287,6 +289,13 @@ async def summarize(
         )
 
 
+
+@app.post("/get_review")
+async def getReview (url_produk : str) :
+    valid_url = validate_tokopedia_url(url=url_produk)
+    graph_id = get_product_id(valid_url)["product_id"]
+    result = scrape_all_reviews(product_id=graph_id,max_reviews=200)
+    return result
 # ===============================
 # RUN LOCAL
 # ===============================

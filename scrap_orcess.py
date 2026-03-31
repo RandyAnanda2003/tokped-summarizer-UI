@@ -137,11 +137,11 @@ def clean_review_text(text):
 
         return text
 
-async def scrap_40_reviews_tokopedia (url:str) -> dict :
+async def scrap_orces_reviews_tokopedia (url:str) -> dict :
     url = url
     product_id = get_product_id(url)
     graph_id = product_id["product_id"]
-    reviews = scrape_all_reviews(graph_id,max_reviews=55)
+    reviews = scrape_all_reviews(graph_id,max_reviews=200)
     if reviews is None or len(reviews) < 5 :
         raise HTTPException(
             status_code=500,
@@ -161,8 +161,6 @@ async def scrap_40_reviews_tokopedia (url:str) -> dict :
         if cleaned and cleaned not in seen :
             seen.add(cleaned)
             result.append(cleaned)
-        if result and len(result) == 45 :
-            break
         
     # ===============================
     # 5. JOIN DENGAN TITIK
