@@ -156,7 +156,7 @@ app.add_middleware(RequestLoggingMiddleware)
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-MODEL_API_URL = "http://13.215.251.64:8000/summarize"
+MODEL_API_URL = "https://unfazed-slaw-hydroxide.ngrok-free.dev/summarize"
 
 
 # ===============================
